@@ -5,9 +5,12 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.lang.reflect.Method;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TSPMenu extends JFrame {
 
@@ -42,11 +45,26 @@ public class TSPMenu extends JFrame {
     private JPanel panelMutRange;
     private JButton btnStart;
     private JLabel labelPop;
-    private JTextPane textPane1;
+    private JTextPane txtPopPar;
+    private JSlider sliderPop;
+    private JPanel panelPop;
+    private JLabel labelPopPanel;
+    private JTextField txtPopSize;
+    private JSlider sliderParents;
+    private JPanel panelParents;
+    private JLabel labelParents;
+    private JTextField txtParentsAmount;
+    private ButtonGroup btnGroupMut;
+    private ButtonGroup btnGroupCross;
+    private AtomicBoolean atBoolean;
 
     public static void main(String[] args) {
-        TSPMenu menu = new TSPMenu();
-
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                TSPMenu menu = new TSPMenu();
+            }
+        });
     }
 
     public TSPMenu() {
@@ -58,21 +76,80 @@ public class TSPMenu extends JFrame {
         setVisible(true);
 
 
-        //Setting up txtMutProb and txtMutrange
+        //Setting up txtMutProb and txtMutRange
         txtMutProbValue.setText(String.valueOf(sliderMutProb.getValue()));
         txtMutRangValue.setText(String.valueOf(sliderMutRange.getValue()));
+        txtPopSize.setText(String.valueOf(sliderPop.getValue()));
 
 
         //Setting up action listener
+        atBoolean = new AtomicBoolean(true);
         btnStart.addActionListener(action -> {
 
         });
         sliderMutProb.addChangeListener(action -> {
-            txtMutProbValue.setText(String.valueOf(sliderMutProb.getValue()));
+            sliderAction(sliderMutProb, txtMutProbValue);
         });
+        txtMutProbValue.getDocument().addDocumentListener(txtAction(sliderMutProb, txtMutProbValue));
         sliderMutRange.addChangeListener(action -> {
             txtMutRangValue.setText(String.valueOf(sliderMutRange.getValue()));
         });
+        sliderPop.addChangeListener(action -> {
+            txtPopSize.setText(String.valueOf(sliderPop.getValue()));
+        });
+        sliderParents.addChangeListener(action -> {
+            txtParentsAmount.setText(String.valueOf(sliderParents.getValue()));
+        });
+
+        //Setting up ButtonGroup for Mutation and Crossover
+        btnGroupCross = new ButtonGroup();
+        btnGroupMut = new ButtonGroup();
+        btnGroupMut.add(radBtnMutVer1);
+        btnGroupMut.add(radBtnMutVer2);
+        btnGroupCross.add(radBtnCrossVer1);
+        btnGroupCross.add(radBtnCrossVer2);
+        btnGroupCross.add(radBtnCrossVer3);
+    }
+
+    private void sliderAction(JSlider slider, JTextField txtField) {
+        if (atBoolean.compareAndExchange(true, false)) {
+            txtField.setText(String.valueOf(slider.getValue()));
+            atBoolean.set(true);
+        }
+    }
+
+    private DocumentListener txtAction(JSlider slider, JTextField txtField) {
+
+
+        DocumentListener retDoc = new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                common(e);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                common(e);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+
+            }
+
+            private void common(DocumentEvent e) {
+                if (atBoolean.compareAndExchange(true, false)) {
+                    try {
+                        int num = Integer.parseInt(txtField.getText());
+                        slider.setValue(num);
+                        atBoolean.set(true);
+                    } catch (NumberFormatException nfex) {
+                        atBoolean.set(true);
+                    }
+                }
+            }
+        };
+        return retDoc;
     }
 
 
@@ -182,7 +259,7 @@ public class TSPMenu extends JFrame {
         this.$$$loadLabelText$$$(label1, this.$$$getMessageFromBundle$$$("com/traveling/salesman/problem/res/Strings", "string.label.mutateProb"));
         panelMutProb.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         txtMutProbValue = new JTextField();
-        txtMutProbValue.setEditable(false);
+        txtMutProbValue.setEditable(true);
         panelMutProb.add(txtMutProbValue, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(50, 34), new Dimension(50, 34), null, 0, false));
         sliderMutRange = new JSlider();
         sliderMutRange.setMaximum(10);
@@ -206,6 +283,47 @@ public class TSPMenu extends JFrame {
         btnStart = new JButton();
         this.$$$loadButtonText$$$(btnStart, this.$$$getMessageFromBundle$$$("com/traveling/salesman/problem/res/Strings", "string.btn.start"));
         settingsPanel.add(btnStart, new GridConstraints(10, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelPop = new JLabel();
+        this.$$$loadLabelText$$$(labelPop, this.$$$getMessageFromBundle$$$("com/traveling/salesman/problem/res/Strings", "string.label.pop"));
+        settingsPanel.add(labelPop, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        txtPopPar = new JTextPane();
+        txtPopPar.setText("");
+        settingsPanel.add(txtPopPar, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        sliderPop = new JSlider();
+        sliderPop.setMaximum(1000);
+        sliderPop.setMinimum(4);
+        sliderPop.setMinorTickSpacing(4);
+        sliderPop.setSnapToTicks(true);
+        sliderPop.setValue(16);
+        sliderPop.setValueIsAdjusting(false);
+        settingsPanel.add(sliderPop, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panelPop = new JPanel();
+        panelPop.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+        settingsPanel.add(panelPop, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_SOUTH, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        labelPopPanel = new JLabel();
+        this.$$$loadLabelText$$$(labelPopPanel, this.$$$getMessageFromBundle$$$("com/traveling/salesman/problem/res/Strings", "string.label.popPanel"));
+        panelPop.add(labelPopPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        txtPopSize = new JTextField();
+        txtPopSize.setEditable(false);
+        txtPopSize.setText("");
+        panelPop.add(txtPopSize, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(50, 34), new Dimension(50, 34), null, 0, false));
+        sliderParents = new JSlider();
+        sliderParents.setMaximum(1000);
+        sliderParents.setMinimum(2);
+        sliderParents.setMinorTickSpacing(2);
+        sliderParents.setSnapToTicks(true);
+        sliderParents.setValue(8);
+        settingsPanel.add(sliderParents, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panelParents = new JPanel();
+        panelParents.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+        settingsPanel.add(panelParents, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_SOUTH, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        labelParents = new JLabel();
+        this.$$$loadLabelText$$$(labelParents, this.$$$getMessageFromBundle$$$("com/traveling/salesman/problem/res/Strings", "string.label.parent"));
+        panelParents.add(labelParents, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        txtParentsAmount = new JTextField();
+        txtParentsAmount.setEditable(false);
+        txtParentsAmount.setText("");
+        panelParents.add(txtParentsAmount, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(50, 34), new Dimension(50, 34), null, 0, false));
     }
 
     private static Method $$$cachedGetBundleMethod$$$ = null;
