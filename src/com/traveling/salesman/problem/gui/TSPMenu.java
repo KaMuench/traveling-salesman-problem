@@ -8,8 +8,13 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.io.File;
 import java.lang.reflect.Method;
-import java.util.ResourceBundle;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TSPMenu extends JFrame {
@@ -35,8 +40,8 @@ public class TSPMenu extends JFrame {
     private JRadioButton radBtnCrossVer3;
     private JTextPane txtCrossVer3;
     private JPanel settingsPanel;
-    private JTextPane txtConsolOutput;
-    private JScrollPane consolScrollPane;
+    private JTextPane txtConsoleOutput;
+    private JScrollPane consoleScrollPane;
     private JPanel panelMutProb;
     private JTextField txtMutProbValue;
     private JSlider sliderMutRange;
@@ -54,9 +59,7 @@ public class TSPMenu extends JFrame {
     private JPanel panelParents;
     private JLabel labelParents;
     private JTextField txtParentsAmount;
-    private ButtonGroup btnGroupMut;
-    private ButtonGroup btnGroupCross;
-    private AtomicBoolean atBoolean;
+    private final SimpleDateFormat dateFormat;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -73,85 +76,66 @@ public class TSPMenu extends JFrame {
         setSize(1000, 800);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setVisible(true);
+        dateFormat = new SimpleDateFormat("HH:mm:ss", Locale.GERMANY);
 
 
         //Setting up txtMutProb and txtMutRange
         txtMutProbValue.setText(String.valueOf(sliderMutProb.getValue()));
         txtMutRangValue.setText(String.valueOf(sliderMutRange.getValue()));
         txtPopSize.setText(String.valueOf(sliderPop.getValue()));
-
+        txtParentsAmount.setText(String.valueOf(sliderParents.getValue()));
 
         //Setting up action listener
-        atBoolean = new AtomicBoolean(true);
+        AtomicBoolean atBoolean = new AtomicBoolean(true);
         btnStart.addActionListener(action -> {
+            new TSPGraphFrame();
+        });
+        //Mutation Probability Listener
+        sliderMutProb.addChangeListener(new Listener.SliderListener(sliderMutProb, txtMutProbValue, atBoolean));
+        txtMutProbValue.getDocument().addDocumentListener(new Listener.TextValueListener(sliderMutProb,txtMutProbValue, atBoolean));
+        txtMutProbValue.addFocusListener( new Listener.TextFocusListener(sliderMutProb, txtMutProbValue));
 
-        });
-        sliderMutProb.addChangeListener(action -> {
-            sliderAction(sliderMutProb, txtMutProbValue);
-        });
-        txtMutProbValue.getDocument().addDocumentListener(txtAction(sliderMutProb, txtMutProbValue));
-        sliderMutRange.addChangeListener(action -> {
-            txtMutRangValue.setText(String.valueOf(sliderMutRange.getValue()));
-        });
-        sliderPop.addChangeListener(action -> {
-            txtPopSize.setText(String.valueOf(sliderPop.getValue()));
-        });
-        sliderParents.addChangeListener(action -> {
-            txtParentsAmount.setText(String.valueOf(sliderParents.getValue()));
-        });
+        //Mutation Range Listener
+        sliderMutRange.addChangeListener(new Listener.SliderListener(sliderMutRange, txtMutRangValue, atBoolean));
+        txtMutRangValue.getDocument().addDocumentListener(new Listener.TextValueListener(sliderMutRange, txtMutRangValue, atBoolean));
+        txtMutRangValue.addFocusListener( new Listener.TextFocusListener(sliderMutRange, txtMutRangValue));
+
+
+        //Population Listener
+        sliderPop.addChangeListener(new Listener.SliderListener(sliderPop, txtPopSize, atBoolean));
+        txtPopSize.getDocument().addDocumentListener(new Listener.TextValueListener(sliderPop, txtPopSize, atBoolean));
+        txtPopSize.addFocusListener( new Listener.TextFocusListener(sliderPop, txtPopSize));
+
+
+        //Parents Listener
+        sliderParents.addChangeListener( new Listener.SliderListener(sliderParents, txtParentsAmount, atBoolean));
+        txtParentsAmount.getDocument().addDocumentListener(new Listener.TextValueListener(sliderParents, txtParentsAmount, atBoolean));
+        txtParentsAmount.addFocusListener( new Listener.TextFocusListener(sliderParents, txtParentsAmount));
+
 
         //Setting up ButtonGroup for Mutation and Crossover
-        btnGroupCross = new ButtonGroup();
-        btnGroupMut = new ButtonGroup();
+        ButtonGroup btnGroupCross = new ButtonGroup();
+        ButtonGroup btnGroupMut = new ButtonGroup();
         btnGroupMut.add(radBtnMutVer1);
         btnGroupMut.add(radBtnMutVer2);
         btnGroupCross.add(radBtnCrossVer1);
         btnGroupCross.add(radBtnCrossVer2);
         btnGroupCross.add(radBtnCrossVer3);
+
+        writeToConsole("TSP-Solver started");
     }
 
-    private void sliderAction(JSlider slider, JTextField txtField) {
-        if (atBoolean.compareAndExchange(true, false)) {
-            txtField.setText(String.valueOf(slider.getValue()));
-            atBoolean.set(true);
-        }
+
+    public File readPath() {
+        return new File(txtPath.getText());
     }
 
-    private DocumentListener txtAction(JSlider slider, JTextField txtField) {
-
-
-        DocumentListener retDoc = new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                common(e);
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                common(e);
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-
-            }
-
-            private void common(DocumentEvent e) {
-                if (atBoolean.compareAndExchange(true, false)) {
-                    try {
-                        int num = Integer.parseInt(txtField.getText());
-                        slider.setValue(num);
-                        atBoolean.set(true);
-                    } catch (NumberFormatException nfex) {
-                        atBoolean.set(true);
-                    }
-                }
-            }
-        };
-        return retDoc;
+    public void writeToConsole(String msg) {
+        Date date = new Date();
+        txtConsoleOutput.setText(String.format("%s%n%s: %s",txtConsoleOutput.getText(), dateFormat.format(date), msg));
     }
-
 
     {
 // GUI initializer generated by IntelliJ IDEA GUI Designer
@@ -177,20 +161,20 @@ public class TSPMenu extends JFrame {
         mainPanel.setMaximumSize(new Dimension(-1, -1));
         mainPanel.setMinimumSize(new Dimension(700, 700));
         mainPanel.setPreferredSize(new Dimension(1000, 800));
-        consolScrollPane = new JScrollPane();
-        consolScrollPane.setEnabled(true);
-        consolScrollPane.setMinimumSize(new Dimension(-1, 100));
-        consolScrollPane.setName("");
-        consolScrollPane.setPreferredSize(new Dimension(-1, 100));
-        consolScrollPane.setToolTipText("");
-        mainPanel.add(consolScrollPane, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        txtConsolOutput = new JTextPane();
-        txtConsolOutput.setEditable(false);
-        txtConsolOutput.setMargin(new Insets(5, 5, 5, 5));
-        txtConsolOutput.setMinimumSize(new Dimension(-1, 100));
-        txtConsolOutput.setPreferredSize(new Dimension(-1, 100));
-        txtConsolOutput.setText("Dies ist ein langer Text\n- mit vielen Absätzen\n- mit vielen Absätzen\n- mit vielen Absätzen\n- mit vielen Absätzen");
-        consolScrollPane.setViewportView(txtConsolOutput);
+        consoleScrollPane = new JScrollPane();
+        consoleScrollPane.setEnabled(true);
+        consoleScrollPane.setMinimumSize(new Dimension(-1, 100));
+        consoleScrollPane.setName("");
+        consoleScrollPane.setPreferredSize(new Dimension(-1, 100));
+        consoleScrollPane.setToolTipText("");
+        mainPanel.add(consoleScrollPane, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        txtConsoleOutput = new JTextPane();
+        txtConsoleOutput.setEditable(false);
+        txtConsoleOutput.setMargin(new Insets(5, 5, 5, 5));
+        txtConsoleOutput.setMinimumSize(new Dimension(-1, 100));
+        txtConsoleOutput.setPreferredSize(new Dimension(-1, 100));
+        txtConsoleOutput.setText("Dies ist ein langer Text\n- mit vielen Absätzen\n- mit vielen Absätzen\n- mit vielen Absätzen\n- mit vielen Absätzen");
+        consoleScrollPane.setViewportView(txtConsoleOutput);
         txtDescription = new JTextPane();
         txtDescription.setBackground(new Color(-2565928));
         txtDescription.setMaximumSize(new Dimension(-1, -1));

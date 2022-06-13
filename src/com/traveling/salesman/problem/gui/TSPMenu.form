@@ -16,7 +16,7 @@
     </properties>
     <border type="none"/>
     <children>
-      <scrollpane id="60c5" binding="consolScrollPane">
+      <scrollpane id="60c5" binding="consoleScrollPane">
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -29,14 +29,14 @@
         </properties>
         <border type="none"/>
         <children>
-          <component id="54879" class="javax.swing.JTextPane" binding="txtConsolOutput">
+          <component id="54879" class="javax.swing.JTextPane" binding="txtConsoleOutput">
             <constraints/>
             <properties>
               <editable value="false"/>
               <margin top="5" left="5" bottom="5" right="5"/>
               <minimumSize width="-1" height="100"/>
               <preferredSize width="-1" height="100"/>
-              <text value="Dies ist ein langer Text&#10;- mit vielen Absätzen&#10;- mit vielen Absätzen&#10;- mit vielen Absätzen&#10;- mit vielen Absätzen"/>
+              <text value=""/>
             </properties>
           </component>
         </children>
@@ -58,7 +58,7 @@
       <grid id="8365e" binding="settingsPanel" layout-manager="GridLayoutManager" row-count="11" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="5" bottom="5" right="5"/>
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="2" hsize-policy="2" anchor="0" fill="1" indent="0" use-parent-layout="false">
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
             <minimum-size width="-1" height="400"/>
             <preferred-size width="-1" height="500"/>
           </grid>
@@ -95,6 +95,7 @@
             <properties>
               <alignmentX value="0.5"/>
               <text resource-bundle="com/traveling/salesman/problem/res/Strings" key="string.label.path"/>
+              <toolTipText value=""/>
             </properties>
           </component>
           <component id="bb8cc" class="javax.swing.JTextField" binding="txtPath">
@@ -278,7 +279,7 @@
                   </grid>
                 </constraints>
                 <properties>
-                  <editable value="false"/>
+                  <editable value="true"/>
                   <text value=""/>
                 </properties>
               </component>
@@ -359,7 +360,7 @@
                   </grid>
                 </constraints>
                 <properties>
-                  <editable value="false"/>
+                  <editable value="true"/>
                   <text value=""/>
                 </properties>
               </component>
@@ -367,7 +368,7 @@
           </grid>
           <component id="2f8ab" class="javax.swing.JSlider" binding="sliderParents">
             <constraints>
-              <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <maximum value="1000"/>
@@ -401,7 +402,7 @@
                   </grid>
                 </constraints>
                 <properties>
-                  <editable value="false"/>
+                  <editable value="true"/>
                   <text value=""/>
                 </properties>
               </component>
