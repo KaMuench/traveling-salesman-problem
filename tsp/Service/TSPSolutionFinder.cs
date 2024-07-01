@@ -9,6 +9,7 @@ namespace TSP.Service
 
     public class TSPSolutionFinder
     {
+        public TSPData? Data { get; set; }
 
         public void Run()
         {
@@ -17,7 +18,7 @@ namespace TSP.Service
 
         public void LoadData(string dataName)
         {
-
+            Data = TSPData.LoadData(dataName);
         }
 
         public static double CalculateDistance(City a, City b)

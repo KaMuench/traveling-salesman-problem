@@ -8,33 +8,18 @@ namespace TSP.Service
 {
     public class City
     {
-        private float _x;
-        public float X 
-        { 
-            get => _x; 
-            set  {
-                if (value < 0) throw new ArgumentException($"Coordinate must be greater 0 but was {_x}");
-                else _x = value;
-            } 
-        }
-        private float _y;
-        public float Y
-        {
-            get => _y;
-            set
-            {
-                if (value < 0) throw new ArgumentException($"Coordinate must be greater 0 but was {_y}");
-                else _y = value;
-            }
-        }
 
-        public City(float x, float y)
+        public double X { get; set; }
+
+        public double Y { get; set; }
+
+        public City(double x, double y)
         {
             X = x;
             Y = y;
         }
 
-        public void SetCoordinates(float x, float y)
+        public void SetCoordinates(double x, double y)
         {
             X = x;
             Y = y;

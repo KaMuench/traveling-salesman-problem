@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using TSP.Service;
 
 namespace TSP.ViewModels
 {
@@ -41,7 +42,12 @@ namespace TSP.ViewModels
             Debug.WriteLine("Start Run!");
             StartButtonCommand.SetCanExecute(false);
 
-            
+            TSPSolutionFinder solutionFinder = new TSPSolutionFinder();
+
+            await Task.Run(()=>solutionFinder.LoadData("./Resources/att48.tsp"));
+
+            Debug.WriteLine($"Name: {solutionFinder.Data.Name}");
+            Debug.WriteLine($"Dimension: {solutionFinder.Data.Cities.Length}");
 
             StartButtonCommand.SetCanExecute(true);
             CentralText = "Calculation completed!";    
