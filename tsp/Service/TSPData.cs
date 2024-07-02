@@ -34,8 +34,8 @@ namespace TSP.Service
             // Filter the dimension and name of the TSP 
             while(iterator.MoveNext())
             {
-                if(iterator.Current.Contains("COMMENT")) data.Name = iterator.Current.Split(" : ")[1];
-                else if(iterator.Current.Contains("DIMENSION")) data.Cities = new City[int.Parse(iterator.Current.Split(" : ")[1])];  
+                if (Regex.IsMatch(iterator.Current, @"^COMMENT : .+$")) data.Name = iterator.Current.Split(" : ")[1];
+                else if (Regex.IsMatch(iterator.Current, @"^DIMENSION : \d+$")) data.Cities = new City[int.Parse(iterator.Current.Split(" : ")[1])];  
                 
             }
 
@@ -50,29 +50,33 @@ namespace TSP.Service
                     int index = int.Parse(iterator.Current.Split(' ')[0]);
                     double x = double.Parse(iterator.Current.Split(' ')[1]);
                     double y = double.Parse(iterator.Current.Split(' ')[2]);
-                    data.Cities[index - 1] = new City(x,y);
+
+                    if((index-1) == data.Cities.Length) throw new InvalidDataException($"{tspFileName}: DIMENSION was {data.Cities.Length} but is more!");
+                    else data.Cities[index - 1] = new City(x,y);
                 }
             }
 
             // Check if all entries in Cities array are filled with a city
             for(int i = 0;i<data.Cities.Length;i++)
             {
-                if (data.Cities[i] == null) throw new InvalidDataException($"{tspFileName}: no DIMENSION was {data.Cities.Length} but was {i+1}!");
-
+                if (data.Cities[i] == null) throw new InvalidDataException($"{tspFileName}: DIMENSION was {data.Cities.Length} but was {i+1}!");
             }
 
-            double sX = 0, bX = 0, sY = 0, bY = 0;
+            double sX = double.MaxValue, sY = double.MaxValue;
+            double bX = double.MinValue, bY = double.MinValue;
             // Filter dimension ranges
             foreach(City city in data.Cities)
             {
                 if (city.X < sX) sX = city.X;
-                else if (city.X > bX) bX = city.X;
+                if (city.X > bX) bX = city.X;
                 if (city.Y < sY) sY = city.Y;
-                else if (city.Y > bY) bY = city.Y;
+                if (city.Y > bY) bY = city.Y;
             }
+            data.XSmallest = sX; data.YSmallest = sY;
+            data.XLargest = bX;  data.YLargest = bY;
 
             data.XDimension = data.XLargest - data.XSmallest;
-            data.XDimension = data.YLargest - data.YSmallest;
+            data.YDimension = data.YLargest - data.YSmallest;
 
             
             return data;

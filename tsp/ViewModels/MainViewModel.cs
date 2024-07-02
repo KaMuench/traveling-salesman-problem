@@ -15,7 +15,6 @@ namespace TSP.ViewModels
     public class MainViewModel : INotifyPropertyChanged
     {
         private string _text;
-        private bool _isRunning = false;
 
 
         public event PropertyChangedEventHandler? PropertyChanged;
