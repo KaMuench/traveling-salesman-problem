@@ -14,7 +14,7 @@ namespace TSP.Tests
         [Test]
         public void TestLoadValid()
         {
-            TSPData data = TSPData.LoadData("./Resources/att48.tsp");
+            TSPData data = new TSPData("./Resources/att48.tsp");
 
             Assert.That(data, !Is.EqualTo(null));
         }
@@ -23,7 +23,7 @@ namespace TSP.Tests
         public void TestLoadInvalidNoFile()
         {
             TSPData? data = null;
-            Assert.Throws<FileNotFoundException>(() => data = TSPData.LoadData("./att48.tsp"));
+            Assert.Throws<FileNotFoundException>(() => data = new TSPData("./att48.tsp"));
             Assert.That(data, Is.EqualTo(null));
         }
 
@@ -31,7 +31,7 @@ namespace TSP.Tests
         public void TestLoadInvalidDimensionMissing()
         {
             TSPData? data = null;
-            Assert.Throws<InvalidDataException>(() => data = TSPData.LoadData("./Resources/invalid_0.tsp"));
+            Assert.Throws<InvalidDataException>(() => data = new TSPData("./Resources/invalid_0.tsp"));
             Assert.That(data, Is.EqualTo(null));
         }
 
@@ -39,7 +39,7 @@ namespace TSP.Tests
         public void TestLoadInvalidDimensionToHigh()
         {
             TSPData? data = null;
-            Assert.Throws<InvalidDataException>(() => data = TSPData.LoadData("./Resources/invalid_1.tsp"));
+            Assert.Throws<InvalidDataException>(() => data = new TSPData("./Resources/invalid_1.tsp"));
             Assert.That(data, Is.EqualTo(null));
         }
 
@@ -47,14 +47,14 @@ namespace TSP.Tests
         public void TestLoadInvalidDimensionToLow()
         {
             TSPData? data = null;
-            Assert.Throws<InvalidDataException>(() => data = TSPData.LoadData("./Resources/invalid_2.tsp"));
+            Assert.Throws<InvalidDataException>(() => data = new TSPData("./Resources/invalid_2.tsp"));
             Assert.That(data, Is.EqualTo(null));
         }
 
         [Test]
         public void TestLoadCheckValues()
         {
-            TSPData? data = TSPData.LoadData("./Resources/valid_0.tsp");
+            TSPData? data = new TSPData("./Resources/valid_0.tsp");
             Assert.That(data, !Is.EqualTo(null));
             Assert.That(data.XSmallest, Is.EqualTo(3.0));
             Assert.That(data.XLargest, Is.EqualTo(100.0));

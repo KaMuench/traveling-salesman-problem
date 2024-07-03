@@ -15,10 +15,12 @@ namespace TSP.ViewModels
     public class MainViewModel : INotifyPropertyChanged
     {
         private string _text;
+        private TSPSolutionFinder _solutionFinder;
 
 
         public event PropertyChangedEventHandler? PropertyChanged;
         public RelayCommand StartButtonCommand { get; set; }
+        public RelayCommand LoadProblemCommand { get; set; }
 
         public string CentralText
         {
@@ -34,22 +36,41 @@ namespace TSP.ViewModels
         {
             _text = "Click the Run button to start the TSP calculation!";
             StartButtonCommand = new RelayCommand(StartRun);
+            LoadProblemCommand = new RelayCommand(LoadProblem);
+
+            _solutionFinder = new TSPSolutionFinder();
         }
 
         private async void StartRun(object? parameter)
         {
-            Debug.WriteLine("Start Run!");
             StartButtonCommand.SetCanExecute(false);
-
-            TSPSolutionFinder solutionFinder = new TSPSolutionFinder();
-
-            await Task.Run(()=>solutionFinder.LoadData("./Resources/att48.tsp"));
-
-            Debug.WriteLine($"Name: {solutionFinder.Data.Name}");
-            Debug.WriteLine($"Dimension: {solutionFinder.Data.Cities.Length}");
-
+            LoadProblemCommand.SetCanExecute(false);
+            if (_solutionFinder.Data != null)
+            {
+                Debug.WriteLine($"Run calculaton!");
+            } else
+            {
+                CentralText = "Load the data first, before running the caluclation!";
+                Debug.WriteLine($"Load data first!");
+            }
             StartButtonCommand.SetCanExecute(true);
-            CentralText = "Calculation completed!";    
+            LoadProblemCommand.SetCanExecute(true);
+        }
+
+        private async void LoadProblem(object? parameter)
+        {
+            LoadProblemCommand.SetCanExecute(false);
+            StartButtonCommand.SetCanExecute(false);
+            await Task.Run(() => _solutionFinder.LoadData("./Resources/att48.tsp"));
+
+            if(_solutionFinder.Data != null)
+            {
+                string message = $"Data loaded!\nName:\t\t{_solutionFinder.Data.Name}\nDimension:\t{_solutionFinder.Data.Cities.Length}";
+                Debug.WriteLine(message);
+                CentralText = message;
+            }
+            LoadProblemCommand.SetCanExecute(true);
+            StartButtonCommand.SetCanExecute(true);
         }
 
         public void OnPropertyChanged([CallerMemberName] string? propertyName = null)

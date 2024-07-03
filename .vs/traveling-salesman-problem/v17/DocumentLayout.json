@@ -3,28 +3,32 @@
   "WorkspaceRootPath": "C:\\Users\\kaleb\\Documents\\Repositories\\traveling-salesman-problem\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{D2F6B5CF-F8AB-4609-9BBC-EE9F4170CF58}|TSP.Tests\\TSP.Tests.csproj|c:\\users\\kaleb\\documents\\repositories\\traveling-salesman-problem\\tsp.tests\\tsptests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D2F6B5CF-F8AB-4609-9BBC-EE9F4170CF58}|TSP.Tests\\TSP.Tests.csproj|solutionrelative:tsp.tests\\tsptests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F0EEF279-F3E2-4471-8733-F96798DAADF0}|tsp\\TSP.csproj|c:\\users\\kaleb\\documents\\repositories\\traveling-salesman-problem\\tsp\\viewmodels\\mainviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F0EEF279-F3E2-4471-8733-F96798DAADF0}|tsp\\TSP.csproj|solutionrelative:tsp\\viewmodels\\mainviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F0EEF279-F3E2-4471-8733-F96798DAADF0}|tsp\\TSP.csproj|c:\\users\\kaleb\\documents\\repositories\\traveling-salesman-problem\\tsp\\views\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{F0EEF279-F3E2-4471-8733-F96798DAADF0}|tsp\\TSP.csproj|solutionrelative:tsp\\views\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{F0EEF279-F3E2-4471-8733-F96798DAADF0}|tsp\\TSP.csproj|c:\\users\\kaleb\\documents\\repositories\\traveling-salesman-problem\\tsp\\service\\tspsolutionfinder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F0EEF279-F3E2-4471-8733-F96798DAADF0}|tsp\\TSP.csproj|solutionrelative:tsp\\service\\tspsolutionfinder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{D2F6B5CF-F8AB-4609-9BBC-EE9F4170CF58}|TSP.Tests\\TSP.Tests.csproj|c:\\users\\kaleb\\documents\\repositories\\traveling-salesman-problem\\tsp.tests\\tsptests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D2F6B5CF-F8AB-4609-9BBC-EE9F4170CF58}|TSP.Tests\\TSP.Tests.csproj|solutionrelative:tsp.tests\\tsptests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F0EEF279-F3E2-4471-8733-F96798DAADF0}|tsp\\TSP.csproj|c:\\users\\kaleb\\documents\\repositories\\traveling-salesman-problem\\tsp\\service\\tspdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F0EEF279-F3E2-4471-8733-F96798DAADF0}|tsp\\TSP.csproj|solutionrelative:tsp\\service\\tspdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D2F6B5CF-F8AB-4609-9BBC-EE9F4170CF58}|TSP.Tests\\TSP.Tests.csproj|c:\\users\\kaleb\\documents\\repositories\\traveling-salesman-problem\\tsp.tests\\resources\\valid_0.tsp||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{D2F6B5CF-F8AB-4609-9BBC-EE9F4170CF58}|TSP.Tests\\TSP.Tests.csproj|solutionrelative:tsp.tests\\resources\\valid_0.tsp||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{D2F6B5CF-F8AB-4609-9BBC-EE9F4170CF58}|TSP.Tests\\TSP.Tests.csproj|c:\\users\\kaleb\\documents\\repositories\\traveling-salesman-problem\\tsp.tests\\tspdatatests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D2F6B5CF-F8AB-4609-9BBC-EE9F4170CF58}|TSP.Tests\\TSP.Tests.csproj|solutionrelative:tsp.tests\\tspdatatests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{F0EEF279-F3E2-4471-8733-F96798DAADF0}|tsp\\TSP.csproj|c:\\users\\kaleb\\documents\\repositories\\traveling-salesman-problem\\tsp\\viewmodels\\mainviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F0EEF279-F3E2-4471-8733-F96798DAADF0}|tsp\\TSP.csproj|solutionrelative:tsp\\viewmodels\\mainviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{F0EEF279-F3E2-4471-8733-F96798DAADF0}|tsp\\TSP.csproj|c:\\users\\kaleb\\documents\\repositories\\traveling-salesman-problem\\tsp\\service\\city.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F0EEF279-F3E2-4471-8733-F96798DAADF0}|tsp\\TSP.csproj|solutionrelative:tsp\\service\\city.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{F0EEF279-F3E2-4471-8733-F96798DAADF0}|tsp\\TSP.csproj|c:\\users\\kaleb\\documents\\repositories\\traveling-salesman-problem\\tsp\\views\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{F0EEF279-F3E2-4471-8733-F96798DAADF0}|tsp\\TSP.csproj|solutionrelative:tsp\\views\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,68 +38,82 @@
       "DocumentGroups": [
         {
           "DockedWidth": 206,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 5,
+              "Title": "valid_0.tsp",
+              "DocumentMoniker": "C:\\Users\\kaleb\\Documents\\Repositories\\traveling-salesman-problem\\TSP.Tests\\Resources\\valid_0.tsp",
+              "RelativeDocumentMoniker": "TSP.Tests\\Resources\\valid_0.tsp",
+              "ToolTip": "C:\\Users\\kaleb\\Documents\\Repositories\\traveling-salesman-problem\\TSP.Tests\\Resources\\valid_0.tsp",
+              "RelativeToolTip": "TSP.Tests\\Resources\\valid_0.tsp",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2024-07-03T15:25:53.148Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "TSPData.cs",
+              "DocumentMoniker": "C:\\Users\\kaleb\\Documents\\Repositories\\traveling-salesman-problem\\tsp\\Service\\TSPData.cs",
+              "RelativeDocumentMoniker": "tsp\\Service\\TSPData.cs",
+              "ToolTip": "C:\\Users\\kaleb\\Documents\\Repositories\\traveling-salesman-problem\\tsp\\Service\\TSPData.cs",
+              "RelativeToolTip": "tsp\\Service\\TSPData.cs",
+              "ViewState": "AQIAAB4AAAAAAAAAAAAcwAwAAAAVAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-03T15:04:35.261Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "TSPTests.cs",
               "DocumentMoniker": "C:\\Users\\kaleb\\Documents\\Repositories\\traveling-salesman-problem\\TSP.Tests\\TSPTests.cs",
               "RelativeDocumentMoniker": "TSP.Tests\\TSPTests.cs",
               "ToolTip": "C:\\Users\\kaleb\\Documents\\Repositories\\traveling-salesman-problem\\TSP.Tests\\TSPTests.cs",
               "RelativeToolTip": "TSP.Tests\\TSPTests.cs",
-              "ViewState": "AQIAAA4AAAAAAAAAAAAgwCQAAAA2AAAA",
+              "ViewState": "AQIAAB4AAAAAAAAAAAAowCUAAABKAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-07-02T09:43:06.015Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "TSPSolutionFinder.cs",
               "DocumentMoniker": "C:\\Users\\kaleb\\Documents\\Repositories\\traveling-salesman-problem\\tsp\\Service\\TSPSolutionFinder.cs",
               "RelativeDocumentMoniker": "tsp\\Service\\TSPSolutionFinder.cs",
               "ToolTip": "C:\\Users\\kaleb\\Documents\\Repositories\\traveling-salesman-problem\\tsp\\Service\\TSPSolutionFinder.cs",
               "RelativeToolTip": "tsp\\Service\\TSPSolutionFinder.cs",
-              "ViewState": "AQIAAAsAAAAAAAAAAAAAABUAAAB/AAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACQAAAA1AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-06-30T18:54:32.367Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "City.cs",
-              "DocumentMoniker": "C:\\Users\\kaleb\\Documents\\Repositories\\traveling-salesman-problem\\tsp\\Service\\City.cs",
-              "RelativeDocumentMoniker": "tsp\\Service\\City.cs",
-              "ToolTip": "C:\\Users\\kaleb\\Documents\\Repositories\\traveling-salesman-problem\\tsp\\Service\\City.cs",
-              "RelativeToolTip": "tsp\\Service\\City.cs",
-              "ViewState": "AQIAAAYAAAAAAAAAAAAAABUAAAAzAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-30T19:11:21.238Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 6,
               "Title": "TSPDataTests.cs",
               "DocumentMoniker": "C:\\Users\\kaleb\\Documents\\Repositories\\traveling-salesman-problem\\TSP.Tests\\TSPDataTests.cs",
               "RelativeDocumentMoniker": "TSP.Tests\\TSPDataTests.cs",
               "ToolTip": "C:\\Users\\kaleb\\Documents\\Repositories\\traveling-salesman-problem\\TSP.Tests\\TSPDataTests.cs",
               "RelativeToolTip": "TSP.Tests\\TSPDataTests.cs",
-              "ViewState": "AQIAACYAAAAAAAAAAAA5wDsAAAA3AAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABAAAAAmAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-07-02T09:15:44.672Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
               "Title": "MainViewModel.cs",
               "DocumentMoniker": "C:\\Users\\kaleb\\Documents\\Repositories\\traveling-salesman-problem\\tsp\\ViewModels\\MainViewModel.cs",
               "RelativeDocumentMoniker": "tsp\\ViewModels\\MainViewModel.cs",
               "ToolTip": "C:\\Users\\kaleb\\Documents\\Repositories\\traveling-salesman-problem\\tsp\\ViewModels\\MainViewModel.cs",
               "RelativeToolTip": "tsp\\ViewModels\\MainViewModel.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABAAAAAdAAAA",
+              "ViewState": "AQIAADIAAAAAAAAAAAAQwD4AAAA0AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-06-30T18:00:38.69Z",
               "EditorCaption": ""
@@ -123,7 +141,7 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 1,
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "C:\\Users\\kaleb\\Documents\\Repositories\\traveling-salesman-problem\\tsp\\Views\\MainWindow.xaml",
               "RelativeDocumentMoniker": "tsp\\Views\\MainWindow.xaml",

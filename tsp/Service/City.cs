@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace TSP.Service
 {
+    /// <summary>
+    /// The purpose of this class is to be used as a storage for x and y coordinates. 
+    /// </summary>
     public class City
     {
 

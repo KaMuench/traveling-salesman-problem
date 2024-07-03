@@ -7,7 +7,27 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Button Content="Run" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding StartButtonCommand}" Padding="5" Width="60"/>
-        <TextBlock Name="statusText" HorizontalAlignment="Center" Margin="0,64,0,0" TextWrapping="Wrap" Text="{Binding CentralText}" VerticalAlignment="Top" Width="120"/>
+        <Button Content="Run" 
+                HorizontalAlignment="Center" 
+                VerticalAlignment="Center" 
+                Command="{Binding StartButtonCommand}" 
+                Padding="5" 
+                Width="60"/>
+        
+        <Button Content="Load" 
+                HorizontalAlignment="Center" 
+                VerticalAlignment="Center" 
+                Command="{Binding LoadProblemCommand}" 
+                Padding="5" 
+                Width="60" 
+                Margin="0,64,0,0"/>
+        
+        <TextBlock Name="statusText" 
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Top"
+                   Margin="0,64,0,0" 
+                   TextWrapping="Wrap" 
+                   Text="{Binding CentralText}"  
+                   Width="300"/>
     </Grid>
 </Window>
