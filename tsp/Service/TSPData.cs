@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -23,9 +24,42 @@ namespace TSP.Service
         public double XDimension { get; private set; }
         public double YDimension { get; private set; }
 
+        private double[,] _distanceMatrix;
+
+        /// <summary>
+        /// This constructor creates the TSPData object using the content of an .tsp file. It calles LoadData passing the 
+        /// name of the tsp file to be loaded.It instanciates the Cities array and constructs a distance matrix containing 
+        /// the distances between each city. 
+        /// </summary>
+        /// <param name="tspFileName"></param>
         public TSPData(string tspFileName) 
         {
             LoadData(tspFileName);
+
+            double sX = double.MaxValue, sY = double.MaxValue;
+            double bX = double.MinValue, bY = double.MinValue;
+            // Filter dimension ranges
+            foreach (City city in Cities)
+            {
+                if (city.X < sX) sX = city.X;
+                if (city.X > bX) bX = city.X;
+                if (city.Y < sY) sY = city.Y;
+                if (city.Y > bY) bY = city.Y;
+            }
+            XSmallest = sX; YSmallest = sY;
+            XLargest = bX; YLargest = bY;
+
+            XDimension = XLargest - XSmallest;
+            YDimension = YLargest - YSmallest;
+
+            _distanceMatrix = new double[Cities.Length,Cities.Length];
+            for (int i = 0; i < _distanceMatrix.GetLength(0); i++)
+            {
+                for (int j = 0; j < _distanceMatrix.GetLength(1); j++)
+                {
+                    _distanceMatrix[i,j] = CalculateDistance(Cities[i], Cities[j]);
+                }
+            }
         }
 
         /// <summary>
@@ -84,22 +118,34 @@ namespace TSP.Service
             {
                 if (Cities[i] == null) throw new InvalidDataException($"{tspFileName}: DIMENSION was {Cities.Length} but was {i+1}!");
             }
+        }
 
-            double sX = double.MaxValue, sY = double.MaxValue;
-            double bX = double.MinValue, bY = double.MinValue;
-            // Filter dimension ranges
-            foreach(City city in Cities)
-            {
-                if (city.X < sX) sX = city.X;
-                if (city.X > bX) bX = city.X;
-                if (city.Y < sY) sY = city.Y;
-                if (city.Y > bY) bY = city.Y;
-            }
-            XSmallest = sX; YSmallest = sY;
-            XLargest = bX;  YLargest = bY;
 
-            XDimension = XLargest - XSmallest;
-            YDimension = YLargest - YSmallest;
+        /// <summary>
+        /// This method calculates the distance between two cities using pytagoras.
+        /// </summary>
+        /// <param name="a">First City object</param>
+        /// <param name="b">Second City object</param>
+        /// <returns>Distance between the two, as double</returns>
+        public static double CalculateDistance(City a, City b)
+        {
+            return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
+        }
+
+        /// <summary>
+        /// This method returns the distance between two cities using the distance Matrix. 
+        /// </summary>
+        /// <param name="a">First City object</param>
+        /// <param name="b">Second City object</param>
+        /// <returns>Distance between the two, as double</returns>
+        public double CalculateDistance(int a, int b)
+        {
+            if (Cities == null) throw new InvalidOperationException("Cities is null, LoadData() must be called successfully first!");
+            else if(a < 0 || a > Cities.Length) throw new ArgumentException($"Parameter a must be between 0 and {Cities.Length}, but was ${a}!");
+            else if(b < 0 || b > Cities.Length) throw new ArgumentException($"Parameter b must be between 0 and {Cities.Length}, but was ${b}!");
+
+
+            return _distanceMatrix[a, b];
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -15,6 +16,8 @@ namespace TSP.ViewModels
     public class MainViewModel : INotifyPropertyChanged
     {
         private string _text;
+        private ObservableCollection<int> _populationSize;
+        private int _selectedPopulationSize;
         private TSPSolutionFinder _solutionFinder;
 
 
@@ -31,10 +34,31 @@ namespace TSP.ViewModels
                 OnPropertyChanged();
             }
         }
+        public ObservableCollection<int> PopulationSize
+        {
+            get { return _populationSize; }
+            set
+            {
+                _populationSize = value;
+                OnPropertyChanged();
+            }
+        }
+        public int SelectedPopulationSize
+        {
+            get { return _selectedPopulationSize; }
+            set
+            {
+                _selectedPopulationSize = value;
+                OnPropertyChanged();
+            }
+        }
 
         public MainViewModel()
         {
             _text = "Click the Run button to start the TSP calculation!";
+            _selectedPopulationSize = 8;
+            _populationSize = new ObservableCollection<int> { 4, 8, 16, 32, 64};
+
             StartButtonCommand = new RelayCommand(StartRun);
             LoadProblemCommand = new RelayCommand(LoadProblem);
 
@@ -61,7 +85,7 @@ namespace TSP.ViewModels
         {
             LoadProblemCommand.SetCanExecute(false);
             StartButtonCommand.SetCanExecute(false);
-            await Task.Run(() => _solutionFinder.LoadData("./Resources/att48.tsp"));
+            await Task.Run(() => _solutionFinder.SetupSolution("./Resources/att48.tsp", SelectedPopulationSize));
 
             if(_solutionFinder.Data != null)
             {
