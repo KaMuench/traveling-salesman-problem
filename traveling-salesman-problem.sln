@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TSP", "tsp\TSP.csproj", "{F0EEF279-F3E2-4471-8733-F96798DAADF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TSP", "TSP\TSP.csproj", "{F0EEF279-F3E2-4471-8733-F96798DAADF0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSP.Tests", "TSP.Tests\TSP.Tests.csproj", "{D2F6B5CF-F8AB-4609-9BBC-EE9F4170CF58}"
 EndProject

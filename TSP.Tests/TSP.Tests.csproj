@@ -26,6 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Resources\valid_1.tsp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\valid_0.tsp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -17,6 +17,7 @@ namespace TSP.Service
         /// The list containing the City objects for the tsp. The coordinates of these objects are used to run the calculations.
         /// </summary>
         public TSPData? Data { get; private set; }
+        public TSPPopulationFactory? PopulationFactory { get; private set; }
         public TSPPopulation? Population { get; private set; }
 
         private Queue<int[]> _solutionsQueue = new Queue<int[]>();
@@ -40,7 +41,8 @@ namespace TSP.Service
         public void SetupSolution(string dataName, int populationSize)
         {
             Data = new TSPData(dataName);
-            Population = new TSPPopulation(Data, populationSize);
+            PopulationFactory = new TSPPopulationFactory(Data);
+            Population = new TSPPopulation(PopulationFactory, populationSize);
 
             _currentSolution = Enumerable.Range(0, Data.Cities.Length).ToArray();
             _bestSolution = (int[]) _currentSolution.Clone();

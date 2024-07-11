@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 
 namespace TSP.Service
 {
@@ -14,7 +15,8 @@ namespace TSP.Service
     /// </summary>
     public class TSPPopulation
     {
-        protected TSPData _data;
+        private readonly int _SIZE_SOLUTION;
+        private readonly TSPPopulationFactory _factory;
         protected int[][] _population;
 
         /// <summary>
@@ -25,14 +27,15 @@ namespace TSP.Service
         /// <param name="data">The TSPData object with which this population is asociated.</param>
         /// <param name="size">The size of the population, meaning the amount of solution arrays this 
         /// population shall contain.</param>
-        public TSPPopulation(TSPData data, int size) 
-        { 
-            _data = data;
+        public TSPPopulation(TSPPopulationFactory factory, int size) 
+        {
+            _factory = factory;
             _population = new int[size][];
+            _SIZE_SOLUTION = _factory.Data.Cities.Length;
 
-            for(int i=0; i < size; i++) 
+            for (int i=0; i < size; i++) 
             {
-                _population[i] = Enumerable.Range(0, _data.Cities.Length).ToArray();
+                _population[i] = Enumerable.Range(0, _SIZE_SOLUTION).ToArray();
                 Random.Shared.Shuffle(_population[i]);
             }
 
@@ -55,31 +58,127 @@ namespace TSP.Service
         /// 
         /// </summary>
         /// <param name="solution">The index of the solution in the population array, containing the order.</param>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException">LoadData must be run successfully, before invoking this method.</exception>
-        public double CalculateEffort(int index)
-        {
-            if (_data == null) throw new InvalidOperationException("Data is null!");
+        /// <returns>The total effort for one solution at index "index"</returns>
+       public double CalculateEffort(int index)
+       {
             double sum = 0;
             double value = 0;
 
-            foreach (int i in _population[index])
+            int indexFirst = 0;
+            int indexSecond = 0;
+
+            for (int i = 0;i<_SIZE_SOLUTION;i++)
             {
-                if (i != _data.Cities.Length - 1)
+                indexFirst = _population[index][i];
+                if (i != _SIZE_SOLUTION - 1)
                 {
-                    value = _data.CalculateDistance(i, i + 1);
-                    Console.WriteLine($"City A: ({_data.Cities[i].X,-6} : {_data.Cities[i].Y,-6}) City B: ({_data.Cities[i + 1].X,-6} : {_data.Cities[i + 1].Y,-6}) Effort: {value}");
+                    indexSecond = _population[index][i + 1];
+
+                    value = _factory.Data.CalculateDistance(indexFirst, indexSecond);
+                    Console.WriteLine($"City A: ({_factory.Data.Cities[indexFirst].X,-6} : {_factory.Data.Cities[indexFirst].Y,-6}) City B: ({_factory.Data.Cities[indexSecond].X,-6} : {_factory.Data.Cities[indexSecond].Y,-6}) Effort: {value}");
                     sum += value;
                 }
                 else
                 {
-                    value = _data.CalculateDistance(i, 0);
-                    Console.WriteLine($"City A: ({_data.Cities[i].X,-6} : {_data.Cities[i].Y,-6}) City B: ({_data.Cities[0].X,-6} : {_data.Cities[0].Y,-6}) Effort: {value}");
+                    indexSecond = _population[index][0];
+
+                    value = _factory.Data.CalculateDistance(indexFirst, indexSecond);
+                    Console.WriteLine($"City A: ({_factory.Data.Cities[indexFirst].X,-6} : {_factory.Data.Cities[indexFirst].Y,-6}) City B: ({_factory.Data.Cities[indexSecond].X,-6} : {_factory.Data.Cities[indexSecond].Y,-6}) Effort: {value}");
                     sum += value;
                 }
             }
 
             return sum;
+       }
+
+        public void Mutate()
+        {
+
+        }
+
+        public void CrossOver()
+        {
+            int[][] firstGroup = new int[_population.Length/2][];
+            int[][] secondGroup = new int[_population.Length/2][];
+
+            for (int i = 0; i < _population.Length/2; i++)
+            {
+                firstGroup[i] = Enumerable.Repeat(-1, _population[i].Length).ToArray();
+                secondGroup[i] = Enumerable.Repeat(-1, _population[i].Length).ToArray();
+            }
+
+            /*
+             * Copies the first half of the _population array into the first half of one array 
+             * and copies the second half of the _population array into the second half of the other array.
+             * Example:
+             * 
+             * _population[i] = [0,1,2,3,4]
+             * firstGroup[i]  = [0,1,-,-,-]
+             * secondGroup[i] = [-,-,2,3,4]
+             * 
+             * _population[i+1] = [3,2,1,0,4]
+             * firstGroup[i]    = [0,1,3,2,4]
+             * secondGroup[i]   = [1,0,2,3,4]
+             * 
+             */
+            for (int solIndex=0, newSolIndex=0, length=0;solIndex<_population.Length;solIndex+=2,newSolIndex++)
+            {
+                length = _SIZE_SOLUTION/ 2;
+                Array.Copy(_population[solIndex], 0, firstGroup[newSolIndex], 0, length);
+                Array.Copy(_population[solIndex], length, secondGroup[newSolIndex], length, _SIZE_SOLUTION - length);
+
+                bool inFirstGroup = false;
+                // For each value in _population[i+1] which is present in firstGroup[l], put it in the secondGroup
+                for(int indexOld = 0, indexSecond = 0, indexFirst = length; indexOld < _SIZE_SOLUTION; indexOld++)
+                {
+                    for(int valueNew=0; valueNew < length; valueNew++)
+                    {
+                        // If _population[i+1][j] is already in firstGroup[l] look for next value in _population
+                        if (_population[solIndex + 1][indexOld] == firstGroup[newSolIndex][valueNew])
+                        {
+                            secondGroup[newSolIndex][indexSecond] = _population[solIndex + 1][indexOld];
+                            indexSecond++;
+                            inFirstGroup = true;
+                            break;
+                        }
+                    }
+
+                    if (! inFirstGroup)
+                    {
+                        firstGroup[newSolIndex][indexFirst] = _population[solIndex + 1][indexOld];
+                        indexFirst++;
+                    }
+                    inFirstGroup = false;
+                }
+
+                Array.Copy(firstGroup[newSolIndex],  _population[solIndex], _SIZE_SOLUTION);
+                Array.Copy(secondGroup[newSolIndex], _population[solIndex + 1], _SIZE_SOLUTION);
+            }
+        }
+
+        public int[] GetSolutionCopy(int index)
+        {
+            return (int[]) _population[index].Clone();
+        }
+
+        public void SetPopulation(int[][] solutions)
+        {
+            if (solutions.Length != _population.Length) throw new ArgumentException($"solutions.Length must match _population.Length! Expected {_population.Length} was {solutions.Length} ");
+
+            foreach (int[] i in solutions)
+            {
+                if (i.Length != _SIZE_SOLUTION) throw new ArgumentException($"The length of each inner array must be: {_SIZE_SOLUTION}");
+                HashSet<int> set = new HashSet<int>();
+                foreach (var item in i)
+                {
+                    if (set.Contains(item)) throw new ArgumentException($"Solution at index {i} contains multiple values of the same kind! Value: {item}");
+                    else set.Add(item);
+                    if (item < 0 || item >= _SIZE_SOLUTION) throw new ArgumentException($"Solution at index {i} contains {item}, must be between 0 and {_SIZE_SOLUTION}");
+                    
+                }
+            }
+
+            _population = solutions;
         }
     }
 }
