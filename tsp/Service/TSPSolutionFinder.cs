@@ -42,7 +42,7 @@ namespace TSP.Service
         {
             Data = new TSPData(dataName);
             PopulationFactory = new TSPPopulationFactory(Data);
-            Population = new TSPPopulation(PopulationFactory, populationSize);
+            Population = PopulationFactory.NewPopulation(populationSize, 1,1);
 
             _currentSolution = Enumerable.Range(0, Data.Cities.Length).ToArray();
             _bestSolution = (int[]) _currentSolution.Clone();

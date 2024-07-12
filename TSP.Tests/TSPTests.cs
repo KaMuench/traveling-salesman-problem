@@ -14,7 +14,9 @@ namespace TSP.Tests
         {
             TSPSolutionFinder tSPSolutionFinder = new TSPSolutionFinder();
             tSPSolutionFinder.SetupSolution("./Resources/valid_0.tsp", 4);
-            Assert.That(tSPSolutionFinder.Data, !Is.EqualTo(null));
+            Assert.That(tSPSolutionFinder.Data,                 !Is.EqualTo(null));
+            Assert.That(tSPSolutionFinder.PopulationFactory,    !Is.EqualTo(null));
+            Assert.That(tSPSolutionFinder.Population,           !Is.EqualTo(null));
         }
 
         [Test]

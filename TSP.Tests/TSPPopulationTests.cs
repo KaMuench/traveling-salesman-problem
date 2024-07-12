@@ -10,7 +10,7 @@ using TSP.Service;
 namespace TSP.Tests
 {
     [TestFixture]
-    public class TSPPopulationTests 
+    public class TSPPopulationTests
     {
 
         Dictionary<string, double> dict = new Dictionary<string, double>();
@@ -27,18 +27,18 @@ namespace TSP.Tests
 
             TSPData data = new TSPData("./Resources/valid_0.tsp");
             TSPPopulationFactory factory = new TSPPopulationFactory(data);
-            TSPPopulation population = factory.NewPopulation(4);
+            TSPPopulation population = factory.NewPopulation(4, 0, 1);
 
             double effort = population.CalculateEffort(0);
             StringBuilder key = new StringBuilder();
 
-            foreach(int i in population.GetSolutionCopy(0))
+            foreach (int i in population.GetSolutionCopy(0))
             {
                 key.Append(i);
             }
 
             // Round to 5 digits is enough to proove accuracy and correctness of caluclation
-            Assert.That(Math.Round(effort, 3), Is.EqualTo( dict.GetValueOrDefault(key.ToString()) ), $"Order was {key.ToString()}");
+            Assert.That(Math.Round(effort, 3), Is.EqualTo(dict.GetValueOrDefault(key.ToString())), $"Order was {key.ToString()}");
         }
 
         [Test]
@@ -47,9 +47,9 @@ namespace TSP.Tests
             TSPData data = null;
             TSPPopulation population = null;
             TSPPopulationFactory factory = null;
-            Assert.Throws<InvalidDataException>(    () => data = new TSPData("./Resources/invalid_0.tsp"));
-            Assert.Throws<ArgumentNullException>(   () => factory = new TSPPopulationFactory(data));
-            Assert.Throws<NullReferenceException>(  () => population = factory.NewPopulation(4));
+            Assert.Throws<InvalidDataException>(() => data = new TSPData("./Resources/invalid_0.tsp"));
+            Assert.Throws<ArgumentNullException>(() => factory = new TSPPopulationFactory(data));
+            Assert.Throws<NullReferenceException>(() => population = factory.NewPopulation(4, 0, 1));
         }
 
         [Test]
@@ -57,15 +57,15 @@ namespace TSP.Tests
         {
             TSPData data = new TSPData("./Resources/valid_0.tsp");
             TSPPopulationFactory factory = new TSPPopulationFactory(data);
-            Assert.Throws<ArgumentException>(() => factory.NewPopulation(3));
+            Assert.Throws<ArgumentException>(() => factory.NewPopulation(3, 0, 1));
         }
 
         [Test]
-        public void TestCrossOverEven() 
+        public void TestCrossOverEven()
         {
             TSPData data = new TSPData("./Resources/valid_0.tsp");
             TSPPopulationFactory factory = new TSPPopulationFactory(data);
-            TSPPopulation population = factory.NewPopulation(4);
+            TSPPopulation population = factory.NewPopulation(4, 0, 1);
 
 
             int[][] solutions = new int[][]
@@ -96,7 +96,7 @@ namespace TSP.Tests
         {
             TSPData data = new TSPData("./Resources/valid_1.tsp");
             TSPPopulationFactory factory = new TSPPopulationFactory(data);
-            TSPPopulation population = factory.NewPopulation(4);
+            TSPPopulation population = factory.NewPopulation(4, 0, 1);
 
 
             int[][] solutions = new int[][]
@@ -128,9 +128,9 @@ namespace TSP.Tests
         {
             TSPData data = new TSPData("./Resources/valid_1.tsp");
             TSPPopulationFactory factory = new TSPPopulationFactory(data);
-            TSPPopulation population = factory.NewPopulation(4);
+            TSPPopulation population = factory.NewPopulation(4, 0, 1);
 
-            Assert.Throws<NullReferenceException>(()=>population.SetPopulation(null));
+            Assert.Throws<NullReferenceException>(() => population.SetPopulation(null));
         }
 
         [Test]
@@ -138,7 +138,7 @@ namespace TSP.Tests
         {
             TSPData data = new TSPData("./Resources/valid_1.tsp");
             TSPPopulationFactory factory = new TSPPopulationFactory(data);
-            TSPPopulation population = factory.NewPopulation(4);
+            TSPPopulation population = factory.NewPopulation(4, 0, 1);
 
             int[][] solutions = new int[][]
             {
@@ -156,7 +156,7 @@ namespace TSP.Tests
         {
             TSPData data = new TSPData("./Resources/valid_1.tsp");
             TSPPopulationFactory factory = new TSPPopulationFactory(data);
-            TSPPopulation population = factory.NewPopulation(4);
+            TSPPopulation population = factory.NewPopulation(4, 0, 1);
 
             int[][] solutions = new int[][]
             {
@@ -174,25 +174,26 @@ namespace TSP.Tests
         {
             TSPData data = new TSPData("./Resources/valid_1.tsp");
             TSPPopulationFactory factory = new TSPPopulationFactory(data);
-            TSPPopulation population = factory.NewPopulation(4);
+            TSPPopulation population = factory.NewPopulation(4, 0, 1);
 
-            int[][] solutions = new int[][]
-            {
+            int[][] solutions =
+            [
                 [0,1,2,3,4],
                 [0,1,2,3,5],
                 [0,1,2,3,4],
                 [0,1,2,3,4]
-            };
+            ];
             var ex = Assert.Throws<ArgumentException>(() => population.SetPopulation(solutions));
             Assert.That(Regex.IsMatch(ex.Message, @".*must be between.*"));
 
-            int[][] solutions2 = new int[][]
-{
+            int[][] solutions2 =
+            [
                 [0,1,2,3,4],
                 [0,1,2,3,4],
                 [0,1,2,3,4],
                 [0,1,-1,3,4]
-};
+             ];
+
             ex = Assert.Throws<ArgumentException>(() => population.SetPopulation(solutions2));
             Assert.That(Regex.IsMatch(ex.Message, @".*must be between.*"));
         }
@@ -202,17 +203,74 @@ namespace TSP.Tests
         {
             TSPData data = new TSPData("./Resources/valid_1.tsp");
             TSPPopulationFactory factory = new TSPPopulationFactory(data);
-            TSPPopulation population = factory.NewPopulation(4);
+            TSPPopulation population = factory.NewPopulation(4, 0, 1);
 
-            int[][] solutions = new int[][]
-            {
+            int[][] solutions = 
+            [
                 [0,1,2,3,4],
                 [0,1,2,3,4],
                 [0,1,2,3,4],
                 [0,1,0,3,4]
-            };
+            ];
             var ex = Assert.Throws<ArgumentException>(() => population.SetPopulation(solutions));
             Assert.That(Regex.IsMatch(ex.Message, @".*contains multiple values of the same kind.*"));
         }
+
+        [Test]
+        public void TestMutation1()
+        {
+            TSPData data = new TSPData("./Resources/valid_1.tsp");
+            TSPPopulationFactory factory = new TSPPopulationFactory(data);
+            TSPPopulation population = factory.NewPopulation(4, 1, 1);
+
+            int[][] solutions = 
+            [
+                [0,1,2,3,4],
+                [0,1,2,3,4],
+                [0,1,2,3,4],
+                [0,1,2,3,4]
+            ];
+
+            int[][] solutions2 =
+            [
+                [0,1,2,3,4],
+                [0,1,2,3,4],
+                [0,1,2,3,4],
+                [0,1,2,3,4],
+            ];
+
+            population.Mutate();
+
+            Assert.That(solutions, Is.EquivalentTo(solutions2));
+        }
+
+        [Test]
+        public void TestMutation2()
+        {
+            TSPData data = new TSPData("./Resources/valid_1.tsp");
+            TSPPopulationFactory factory = new TSPPopulationFactory(data);
+            TSPPopulation population = factory.NewPopulation(4, 0.5f, 1);
+
+            int[][] solutions =
+            [
+                [0,1,2,3,4],
+                [0,1,2,3,4],
+                [0,1,2,3,4],
+                [0,1,2,3,4]
+            ];
+
+            int[][] solutions2 =
+            [
+                [0,1,2,3,4],
+                [0,1,2,3,4],
+                [0,1,2,3,4],
+                [0,1,2,3,4],
+            ];
+
+
+            Assert.That(solutions, !Is.EquivalentTo(solutions2));
+        }
+
+
     }
 }
