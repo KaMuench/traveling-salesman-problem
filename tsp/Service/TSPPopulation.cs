@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.DirectoryServices.ActiveDirectory;
+using System.IO.Packaging;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Documents;
@@ -25,28 +27,32 @@ namespace TSP.Service
         public float MutationPropability { get; set; }
         public int MutationRange { get; set; }
 
+        public int PopulationSize {  get; private set; }
+
+
         /// <summary>
         /// This constuctor needs a TSPData instance to create its population. The resulting population
         /// will contain a list of several solution arrays. The content of the solutions are random unique indexes for the 
         /// TSPData.Cities.
         /// </summary>
         /// 
-        /// <param name="size">The size of the population, meaning the amount of solution arrays this population shall contain.</param>
+        /// <param name="amount">The size of the population, meaning the amount of solution arrays this population shall contain.</param>
         /// <param name="factory">The factory used to create this population</param>
         /// <param name="mutationPropability">The propability of mutation happening.</param>
         /// <param name="mutationRange">The range in which the gene swap is done. </param>
-        public TSPPopulation(TSPPopulationFactory factory, int size, float mutationPropability, int mutationRange)
+        public TSPPopulation(TSPPopulationFactory factory, int amount, float mutationPropability, int mutationRange)
         {
             _factory = factory;
-            _population = new int[size][];
+            _population = new int[amount][];
             _SIZE_SOLUTION = _factory.Data.Cities.Length;
             MutationPropability = mutationPropability;
+            PopulationSize = amount;
 
             if (mutationRange < 1 || mutationRange >= _SIZE_SOLUTION) throw new ArgumentOutOfRangeException($"mutationRange must be greater than 0 and smaller than {_SIZE_SOLUTION}! Was {mutationRange}");
             else MutationRange = mutationRange;
 
 
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < amount; i++)
             {
                 _population[i] = Enumerable.Range(0, _SIZE_SOLUTION).ToArray();
                 Random.Shared.Shuffle(_population[i]);
@@ -74,6 +80,11 @@ namespace TSP.Service
         /// <returns>The total effort for one solution at index "index"</returns>
         public double CalculateEffort(int index)
         {
+            return CalculateEffort(_population[index]);
+        }
+        
+        private double CalculateEffort(int[] solution)
+        {
             double sum = 0;
             double value = 0;
 
@@ -82,29 +93,27 @@ namespace TSP.Service
 
             for (int i = 0; i < _SIZE_SOLUTION; i++)
             {
-                indexFirst = _population[index][i];
+                indexFirst = solution[i];
                 if (i != _SIZE_SOLUTION - 1)
                 {
-                    indexSecond = _population[index][i + 1];
+                    indexSecond = solution[i + 1];
 
                     value = _factory.Data.CalculateDistance(indexFirst, indexSecond);
-                    Console.WriteLine($"City A: ({_factory.Data.Cities[indexFirst].X,-6} : {_factory.Data.Cities[indexFirst].Y,-6}) City B: ({_factory.Data.Cities[indexSecond].X,-6} : {_factory.Data.Cities[indexSecond].Y,-6}) Effort: {value}");
                     sum += value;
                 }
                 else
                 {
-                    indexSecond = _population[index][0];
+                    indexSecond = solution[0];
 
                     value = _factory.Data.CalculateDistance(indexFirst, indexSecond);
-                    Console.WriteLine($"City A: ({_factory.Data.Cities[indexFirst].X,-6} : {_factory.Data.Cities[indexFirst].Y,-6}) City B: ({_factory.Data.Cities[indexSecond].X,-6} : {_factory.Data.Cities[indexSecond].Y,-6}) Effort: {value}");
                     sum += value;
                 }
             }
 
+            Console.WriteLine($"Effort sum: {sum}");
             return sum;
         }
-        
-        
+
         /// <summary>
         /// This method executes a mutation on the solution arrays. The mutation means randomly swapping values inside a solution array.
         /// The <see cref="MutationPropability"/> determines how often a mutation might occure. For each value inside a solution array,
@@ -131,53 +140,61 @@ namespace TSP.Service
         }
 
         /// <summary>
-        /// Copies the first half of the _population array into the first half of one array
-        /// and copies the second half of the _population array into the second half of the other array.
-        /// Then it fills up the remaining entries of firstGroup[l] array with the values of _population[i+1] 
-        /// which are not presented in the firstGroup[l] yet, in the order they appear inside the _population[i+1] array.
-        /// Same goes with secondGroup[l] array. Then, firstGroup[l] is copied into _population[i] and secondGroup[l] into _population[i+1].
+        ///
+        /// First the half of the population array which has the best effort value is extracted.
+        ///
+        /// For each array in the best half (parents) of __population solutions:
+        /// Copies the first half of the parents[i] array into the first half of one array
+        /// and copies the second half of the parents[i] array into the second half of the other array.
+        /// Then it fills up the remaining entries of first array with the values of parents[i+1] 
+        /// which are not presented in the first array yet, in the order they appear inside the parents[i+1] array.
+        /// Same goes with second array. Then, the new two "children" arrays are added to the new population.
+        /// 
         /// 
         /// Example:
         /// 
-        /// _population[i] = [0, 1, 2, 3, 4]
-        /// firstGroup[l]  = [0, 1, -, -, -]
-        /// secondGroup[l] = [-, -, 2, 3, 4]
+        /// parents[i] = [0, 1, 2, 3, 4]
+        /// first      = [0, 1, -, -, -]
+        /// second     = [-, -, 2, 3, 4]
         /// 
-        /// population[i + 1]   = [3, 2, 1, 0, 4]
-        /// firstGroup[l]       = [0, 1, 3, 2, 4]
-        /// secondGroup[l]      = [1, 0, 2, 3, 4]
+        /// parents[i+1]   = [3, 2, 1, 0, 4]
+        /// first          = [0, 1, 3, 2, 4]
+        /// secon          = [1, 0, 2, 3, 4]
         /// 
-        /// _population[i]   = [0, 1, 3, 2, 4]
-        /// _population[i+1] = [1, 0, 2, 3, 4]
+        /// parents[i]   = [0, 1, 3, 2, 4]
+        /// parents[i+1] = [1, 0, 2, 3, 4]
         /// 
+        /// 
+        /// At the end also all the parent solutions are added to the new population and the current population is replaced with the new one.
         /// 
         /// </summary>
         public void CrossOver()
         {
-            int[][] firstGroup = new int[_population.Length / 2][];
-            int[][] secondGroup = new int[_population.Length / 2][];
+            int[] first = new int[_SIZE_SOLUTION];
+            int[] second = new int[_SIZE_SOLUTION];
 
-            for (int i = 0; i < _population.Length / 2; i++)
+            int[][] parents = _population.OrderBy(n => CalculateEffort(n)).Take(PopulationSize / 2).ToArray();
+            int[][] newPopulation = new int[PopulationSize][];
+
+            for (int solIndex = 0, length = 0; solIndex < parents.Length; solIndex += 2)
             {
-                firstGroup[i] = Enumerable.Repeat(-1, _population[i].Length).ToArray();
-                secondGroup[i] = Enumerable.Repeat(-1, _population[i].Length).ToArray();
-            }
-            for (int solIndex = 0, newSolIndex = 0, length = 0; solIndex < _population.Length; solIndex += 2, newSolIndex++)
-            {
+                first = Enumerable.Repeat(-1, _SIZE_SOLUTION).ToArray();
+                second = Enumerable.Repeat(-1, _SIZE_SOLUTION).ToArray();
+
                 length = _SIZE_SOLUTION / 2;
-                Array.Copy(_population[solIndex], 0, firstGroup[newSolIndex], 0, length);
-                Array.Copy(_population[solIndex], length, secondGroup[newSolIndex], length, _SIZE_SOLUTION - length);
+                Array.Copy(parents[solIndex], 0, first, 0, length);
+                Array.Copy(parents[solIndex], length, second, length, _SIZE_SOLUTION - length);
 
                 bool inFirstGroup = false;
-                // For each value in _population[i+1] which is present in firstGroup[l], put it in the secondGroup
+                // For each value in parents[i+1] which is present in first, put it in the second
                 for (int indexOld = 0, indexSecond = 0, indexFirst = length; indexOld < _SIZE_SOLUTION; indexOld++)
                 {
                     for (int valueNew = 0; valueNew < length; valueNew++)
                     {
-                        // If _population[i+1][j] is already in firstGroup[l] look for next value in _population
-                        if (_population[solIndex + 1][indexOld] == firstGroup[newSolIndex][valueNew])
+                        // If parents[i+1][j] is already in first look for next value in parents
+                        if (parents[solIndex + 1][indexOld] == first[valueNew])
                         {
-                            secondGroup[newSolIndex][indexSecond] = _population[solIndex + 1][indexOld];
+                            second[indexSecond] = parents[solIndex + 1][indexOld];
                             indexSecond++;
                             inFirstGroup = true;
                             break;
@@ -186,15 +203,22 @@ namespace TSP.Service
 
                     if (!inFirstGroup)
                     {
-                        firstGroup[newSolIndex][indexFirst] = _population[solIndex + 1][indexOld];
+                        first[indexFirst] = parents[solIndex + 1][indexOld];
                         indexFirst++;
                     }
                     inFirstGroup = false;
                 }
 
-                Array.Copy(firstGroup[newSolIndex], _population[solIndex], _SIZE_SOLUTION);
-                Array.Copy(secondGroup[newSolIndex], _population[solIndex + 1], _SIZE_SOLUTION);
+                newPopulation[solIndex] = first;
+                newPopulation[solIndex + 1] = second;
             }
+
+            for (int i=0;i < parents.Length; i++)
+            {
+                newPopulation[i + parents.Length] = parents[i];
+            }
+
+            _population = newPopulation;
         }
 
         public int[] GetSolutionCopy(int index)

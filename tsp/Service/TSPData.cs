@@ -129,7 +129,9 @@ namespace TSP.Service
         /// <returns>Distance between the two, as double</returns>
         public static double CalculateDistance(City a, City b)
         {
-            return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
+            double value = Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
+            Console.WriteLine($"City A: ({a.X,-6} : {a.Y,-6}) City B: ({b.X,-6} : {b.Y,-6}) Effort: {value}");
+            return value;
         }
 
         /// <summary>
@@ -144,7 +146,7 @@ namespace TSP.Service
             else if(a < 0 || a > Cities.Length) throw new ArgumentException($"Parameter a must be between 0 and {Cities.Length}, but was ${a}!");
             else if(b < 0 || b > Cities.Length) throw new ArgumentException($"Parameter b must be between 0 and {Cities.Length}, but was ${b}!");
 
-
+            Console.WriteLine($"City A: ({Cities[a].X,-6} : {Cities[a].Y,-6}) City B: ({Cities[b].X,-6} : {Cities[b].Y,-6}) Effort: {_distanceMatrix[a, b]}");
             return _distanceMatrix[a, b];
         }
     }

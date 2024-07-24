@@ -79,16 +79,19 @@ namespace TSP.Tests
 
             int[][] solutionsnew = new int[][]
             {
-                [3,1,2,0],
-                [1,3,2,0],
                 [1,2,0,3],
-                [2,1,3,0]
+                [1,2,3,0],
+                [1,2,3,0],
+                [0,3,2,1]
             };
 
             population.SetPopulation(solutions);
             population.CrossOver();
 
-            Assert.That(solutions, Is.EquivalentTo(solutionsnew));
+            for(int i=0;i<solutions.Length;i++)
+            {
+                Assert.That(population.GetSolutionCopy(i), Is.EquivalentTo(solutionsnew[i]));
+            }
         }
 
         [Test]
@@ -110,16 +113,19 @@ namespace TSP.Tests
 
             int[][] solutionsnew = new int[][]
             {
-                [3,4,2,1,0],
-                [4,3,1,2,0],
-                [4,1,0,3,2],
-                [4,1,2,3,0]
+                [3,4,1,2,0],
+                [2,1,4,3,0],
+                [4,1,2,3,0],
+                [0,3,4,2,1]
             };
 
             population.SetPopulation(solutions);
             population.CrossOver();
 
-            Assert.That(solutions, Is.EquivalentTo(solutionsnew));
+            for (int i = 0; i < solutions.Length; i++)
+            {
+                Assert.That(population.GetSolutionCopy(i), Is.EquivalentTo(solutionsnew[i]));
+            }
         }
 
 
@@ -239,9 +245,10 @@ namespace TSP.Tests
                 [0,1,2,3,4],
             ];
 
+            population.SetPopulation(solutions);
             population.Mutate();
 
-            Assert.That(solutions, Is.EquivalentTo(solutions2));
+            Assert.That(solutions2[0], Is.EquivalentTo(population.GetSolutionCopy(0)));
         }
 
         [Test]
@@ -268,7 +275,10 @@ namespace TSP.Tests
             ];
 
 
-            Assert.That(solutions, !Is.EquivalentTo(solutions2));
+            population.SetPopulation(solutions);
+            population.Mutate();
+
+            Assert.That(solutions2[0], Is.EquivalentTo(population.GetSolutionCopy(0)));
         }
 
 
