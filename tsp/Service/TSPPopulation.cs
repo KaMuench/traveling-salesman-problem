@@ -83,7 +83,7 @@ namespace TSP.Service
             return CalculateEffort(_population[index]);
         }
         
-        private double CalculateEffort(int[] solution)
+        public double CalculateEffort(int[] solution)
         {
             double sum = 0;
             double value = 0;
@@ -219,6 +219,24 @@ namespace TSP.Service
             }
 
             _population = newPopulation;
+        }
+
+        public int GetBestSolution() 
+        {
+            double bestScore = double.MaxValue;
+            int indexBestScrore = -1;
+
+
+            for(int i=0;i<_population.Length;i++)
+            {
+                if((CalculateEffort(i)) < bestScore)
+                {
+                    bestScore = CalculateEffort(i);
+                    indexBestScrore = i;
+                }
+            }
+
+            return indexBestScrore;
         }
 
         public int[] GetSolutionCopy(int index)

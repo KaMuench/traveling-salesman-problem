@@ -281,6 +281,27 @@ namespace TSP.Tests
             Assert.That(solutions2[0], Is.EquivalentTo(population.GetSolutionCopy(0)));
         }
 
+        [Test]
+        public void TestGetBestSol() 
+        {
+            TSPData data = new TSPData("./Resources/valid_0.tsp");
+            TSPPopulationFactory factory = new TSPPopulationFactory(data);
+            TSPPopulation population = factory.NewPopulation(4, 0, 1);
+
+
+            int[][] solutions = new int[][]
+            {
+                [3,1,2,0],
+                [2,1,3,0],
+                [1,2,3,0],
+                [0,3,2,1]
+            };
+
+            population.SetPopulation(solutions);
+            Assert.That(population.GetBestSolution(), Is.EqualTo(2));
+            Assert.That(population.GetBestSolution(), Is.InRange(0, population.PopulationSize));
+        }
+
 
     }
 }

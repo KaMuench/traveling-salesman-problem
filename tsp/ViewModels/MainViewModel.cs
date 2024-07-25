@@ -65,14 +65,36 @@ namespace TSP.ViewModels
             _solutionFinder = new TSPSolutionFinder();
         }
 
-        private async void StartRun(object? parameter)
+
+
+        private void StartRun(object? parameter)
+        {
+            RunCalculation(parameter);
+
+        }
+
+        private async void RunCalculation(object? parameter) 
         {
             StartButtonCommand.SetCanExecute(false);
             LoadProblemCommand.SetCanExecute(false);
             if (_solutionFinder.Data != null)
             {
                 Debug.WriteLine($"Run calculaton!");
-            } else
+                Task runner = Task.Run(() => _solutionFinder.Run(10000));
+                await Task.Run(() => 
+                {
+                    int[]? solution = null;
+                    while (!runner.IsCompleted)
+                    {
+                        if ((solution = _solutionFinder.RetrieveSolution()) != null)
+                        {
+                            Debug.WriteLine($"New score: {_solutionFinder.EffortBestSolution}");
+                        }
+                    }
+                });
+                Debug.WriteLine("Done!");
+            }
+            else
             {
                 CentralText = "Load the data first, before running the caluclation!";
                 Debug.WriteLine($"Load data first!");
