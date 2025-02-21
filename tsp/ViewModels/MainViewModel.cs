@@ -15,22 +15,32 @@ namespace TSP.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        private string _text;
-        private ObservableCollection<int> _populationSize;
-        private int _selectedPopulationSize;
-        private TSPSolutionFinder _solutionFinder;
+        private string  _text;
+        private int     _selectedPopulationSize;
+
+        private ObservableCollection<int>   _populationSize;
+        private TSPSolutionFinder           _solutionFinder;
 
 
         public event PropertyChangedEventHandler? PropertyChanged;
         public RelayCommand StartButtonCommand { get; set; }
         public RelayCommand LoadProblemCommand { get; set; }
 
-        public string CentralText
+        public string   CentralText
         {
             get { return _text; }
             set
             {
                 _text = value;
+                OnPropertyChanged();
+            }
+        }
+        public int      SelectedPopulationSize
+        {
+            get { return _selectedPopulationSize; }
+            set
+            {
+                _selectedPopulationSize = value;
                 OnPropertyChanged();
             }
         }
@@ -43,15 +53,10 @@ namespace TSP.ViewModels
                 OnPropertyChanged();
             }
         }
-        public int SelectedPopulationSize
-        {
-            get { return _selectedPopulationSize; }
-            set
-            {
-                _selectedPopulationSize = value;
-                OnPropertyChanged();
-            }
-        }
+
+        //
+        // Constructors
+        //
 
         public MainViewModel()
         {
@@ -80,7 +85,7 @@ namespace TSP.ViewModels
             if (_solutionFinder.Data != null)
             {
                 Debug.WriteLine($"Run calculaton!");
-                Task runner = Task.Run(() => _solutionFinder.Run(10000));
+                Task runner = Task.Run(() => _solutionFinder.Run(50000));
                 await Task.Run(() => 
                 {
                     int[]? solution = null;
@@ -89,6 +94,7 @@ namespace TSP.ViewModels
                         if ((solution = _solutionFinder.RetrieveSolution()) != null)
                         {
                             Debug.WriteLine($"New score: {_solutionFinder.EffortBestSolution}");
+                            
                         }
                     }
                 });

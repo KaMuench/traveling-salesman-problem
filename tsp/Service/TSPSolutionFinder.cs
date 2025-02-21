@@ -52,6 +52,9 @@ namespace TSP.Service
                     _bestSolution = _currentSolution;
                     PutSolution((int[]) _bestSolution.Clone());
                 }
+
+                //Debug.Write($"\nIteration: {i}\n");
+                //Population.DebugPopulation();
             }
         }
 
@@ -63,7 +66,7 @@ namespace TSP.Service
         {
             Data = new TSPData(dataName);
             PopulationFactory = new TSPPopulationFactory(Data);
-            Population = PopulationFactory.NewPopulation(populationSize, 1,1);
+            Population = PopulationFactory.NewPopulation(populationSize, 0.2f,2);
 
             _currentSolution = Enumerable.Range(0, Data.Cities.Length).ToArray();
             _bestSolution = (int[]) _currentSolution.Clone();
@@ -79,7 +82,7 @@ namespace TSP.Service
             lock (_solutionsQueue)
             {
                 _solutionsQueue.Enqueue(solution);
-                EffortBestSolution = Population.CalculateEffort(solution);
+                EffortBestSolution = Population?.CalculateEffort(solution);
             }
         }
 

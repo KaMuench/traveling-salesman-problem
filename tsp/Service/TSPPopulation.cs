@@ -58,17 +58,7 @@ namespace TSP.Service
                 Random.Shared.Shuffle(_population[i]);
             }
 
-            Debug.WriteLine($"\nPopulation with size {_population.Length} created: ");
-            foreach (int[] i in _population)
-            {
-                Debug.Write($"\t[{i[0],4}");
-                for (int j = 1; j < i.Length; j++)
-                {
-                    Debug.Write($",{i[j],4}");
-                }
-                Debug.Write($"]\n");
-            }
-            Debug.WriteLine("");
+            DebugPopulation();
         }
 
 
@@ -263,5 +253,19 @@ namespace TSP.Service
 
             _population = solutions;
         }
+    
+        public void DebugPopulation()
+        {
+            foreach (int[] i in _population)
+            {
+                Debug.Write($"\t[{i[0],4}");
+                for (int j = 1; j < i.Length; j++)
+                {
+                    Debug.Write($",{i[j],4}");
+                }
+                Debug.Write($"]\n");
+            }
+            Debug.WriteLine("");
+        }    
     }
 }
