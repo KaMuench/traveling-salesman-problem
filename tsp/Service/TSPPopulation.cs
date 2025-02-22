@@ -58,7 +58,7 @@ namespace TSP.Service
                 Random.Shared.Shuffle(_population[i]);
             }
 
-            DebugPopulation();
+            //DebugPopulation();
         }
 
 

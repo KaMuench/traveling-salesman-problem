@@ -8,7 +8,9 @@ using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Input;
+using Accessibility;
 using TSP.Service;
 
 namespace TSP.ViewModels
@@ -17,32 +19,55 @@ namespace TSP.ViewModels
     {
         private string  _text;
         private int     _selectedPopulationSize;
+        private string  _selectedProblemFile;
+        private float   _mutationProbability;
+        private int     _mutationRange;
+        private int     _iterations;
 
-        private ObservableCollection<int>   _populationSize;
-        private TSPSolutionFinder           _solutionFinder;
+        private ObservableCollection<int>      _populationSize;
+        private ObservableCollection<string>   _problemFile;
+        private TSPSolutionFinder              _solutionFinder;
 
-
+        /// <summary>
+        /// If a property was changed by code, this event is triggered to notify the UI.
+        /// </summary>
         public event PropertyChangedEventHandler? PropertyChanged;
         public RelayCommand StartButtonCommand { get; set; }
         public RelayCommand LoadProblemCommand { get; set; }
 
-        public string   CentralText
+        public string   SelectedProblemFile
+        {
+            get { return _selectedProblemFile; }
+            set { _selectedProblemFile = value; }
+        }
+        public string   ConsoleText
         {
             get { return _text; }
-            set
-            {
-                _text = value;
-                OnPropertyChanged();
+            set 
+            { 
+                _text += value;
+                NotifyUi();
             }
         }
         public int      SelectedPopulationSize
         {
             get { return _selectedPopulationSize; }
-            set
-            {
-                _selectedPopulationSize = value;
-                OnPropertyChanged();
-            }
+            set { _selectedPopulationSize = value; }
+        }
+        public int      MutationRange
+        {
+            get { return _mutationRange; }
+            set { _mutationRange = value; }
+        }
+        public int      Iterations
+        {
+            get { return _iterations; }
+            set { _iterations = value; }
+        }
+        public float    MutationProbability
+        {
+            get { return _mutationProbability; }
+            set { _mutationProbability = value; }
         }
         public ObservableCollection<int> PopulationSize
         {
@@ -50,7 +75,14 @@ namespace TSP.ViewModels
             set
             {
                 _populationSize = value;
-                OnPropertyChanged();
+            }
+        }
+        public ObservableCollection<string> ProblemFile
+        {
+            get { return _problemFile; }
+            set
+            {
+                _problemFile = value;
             }
         }
 
@@ -60,9 +92,14 @@ namespace TSP.ViewModels
 
         public MainViewModel()
         {
-            _text = "Click the Run button to start the TSP calculation!";
-            _selectedPopulationSize = 8;
+            _text = "";
+            _mutationProbability = 0.1f;
+            _mutationRange = 2;
+            _iterations = 10000;
             _populationSize = new ObservableCollection<int> { 4, 8, 16, 32, 64};
+            _selectedPopulationSize = _populationSize[3];
+            _problemFile = new ObservableCollection<string> { "att48.tsp" };
+            _selectedProblemFile = _problemFile[0];
 
             StartButtonCommand = new RelayCommand(StartRun);
             LoadProblemCommand = new RelayCommand(LoadProblem);
@@ -70,40 +107,59 @@ namespace TSP.ViewModels
             _solutionFinder = new TSPSolutionFinder();
         }
 
-
+        /// <summary>
+        /// This method writes a message to the console. If debug is set to true, the message will be written to the debug console as well.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="debug"></param>
+        private void WriteToConsole(string message, bool debug = false)
+        {
+            // Since multiple threads can try to put something into the console
+            lock (_text)
+            {
+                ConsoleText = "\n";
+                ConsoleText = message;
+                ConsoleText = "\n";
+            }
+            if (debug) Debug.WriteLine(message);
+        }
 
         private void StartRun(object? parameter)
         {
             RunCalculation(parameter);
-
         }
 
         private async void RunCalculation(object? parameter) 
         {
             StartButtonCommand.SetCanExecute(false);
             LoadProblemCommand.SetCanExecute(false);
-            if (_solutionFinder.Data != null)
+            if (_solutionFinder.DataLoaded())
             {
-                Debug.WriteLine($"Run calculaton!");
-                Task runner = Task.Run(() => _solutionFinder.Run(50000));
-                await Task.Run(() => 
+                _solutionFinder.SetupSolution(SelectedPopulationSize, MutationRange, MutationProbability);
+
+                if (_solutionFinder.ReadyToRun())
                 {
-                    int[]? solution = null;
-                    while (!runner.IsCompleted)
+                    WriteToConsole($"Run calculaton!");
+                    WriteToConsole($"Parameters: \nPopulation size: {SelectedPopulationSize}\nMutation probability: {MutationProbability}\nMutation range: {MutationRange}");
+                    Task runner = Task.Run(() => _solutionFinder.Run(Iterations));
+                    await Task.Run(() =>
                     {
-                        if ((solution = _solutionFinder.RetrieveSolution()) != null)
+                        int[]? solution = null;
+                        while (!runner.IsCompleted)
                         {
-                            Debug.WriteLine($"New score: {_solutionFinder.EffortBestSolution}");
-                            
+                            if ((solution = _solutionFinder.RetrieveSolution()) != null)
+                            {
+                                WriteToConsole($"New score: {_solutionFinder.EffortBestSolution}");
+
+                            }
                         }
-                    }
-                });
-                Debug.WriteLine("Done!");
+                    });
+                    WriteToConsole("Done!");
+                }
             }
             else
             {
-                CentralText = "Load the data first, before running the caluclation!";
-                Debug.WriteLine($"Load data first!");
+                WriteToConsole("Load the data first, before running the caluclation!");
             }
             StartButtonCommand.SetCanExecute(true);
             LoadProblemCommand.SetCanExecute(true);
@@ -113,19 +169,24 @@ namespace TSP.ViewModels
         {
             LoadProblemCommand.SetCanExecute(false);
             StartButtonCommand.SetCanExecute(false);
-            await Task.Run(() => _solutionFinder.SetupSolution("./Resources/att48.tsp", SelectedPopulationSize));
 
-            if(_solutionFinder.Data != null)
+            WriteToConsole($"Loading data file {SelectedProblemFile} ...", true);
+            await Task.Run(() => _solutionFinder.LoadData($"./Resources/{SelectedProblemFile}"));
+
+            if(_solutionFinder.DataLoaded())
             {
-                string message = $"Data loaded!\nName:\t\t{_solutionFinder.Data.Name}\nDimension:\t{_solutionFinder.Data.Cities.Length}";
-                Debug.WriteLine(message);
-                CentralText = message;
+                string message = _solutionFinder.GetDataInfo();
+                WriteToConsole(message, true);
             }
             LoadProblemCommand.SetCanExecute(true);
             StartButtonCommand.SetCanExecute(true);
         }
 
-        public void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        /// <summary>
+        /// This method is used to notify the UI that a property has changed.
+        /// </summary>
+        /// <param name="propertyName"></param>
+        public void NotifyUi([CallerMemberName] string? propertyName = null)
         {
             Debug.WriteLine($"OnPropertyChanged: {propertyName}");
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

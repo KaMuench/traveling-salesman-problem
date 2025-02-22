@@ -6,18 +6,23 @@
         xmlns:local="clr-namespace:TSP"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+
     <Grid>
 
+        <!--Dividing the window into two columns-->
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="150"/>
+            <!-- Canvas plus console  -->
+            <ColumnDefinition Width="150" Name="SettingsCol"/>
+            <!-- Settings column-->
         </Grid.ColumnDefinitions>
 
+        <!-- Canvas plus console -->
         <Grid Grid.Column="0">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="100"/>
+                <RowDefinition Height="100" Name="ConsoleRow"/>
             </Grid.RowDefinitions>
 
 
@@ -25,54 +30,112 @@
                 Grid.Row="0"
                 Background="White" />
 
-            <TextBox Name="ConsoleOutput" 
-                   Grid.Row="1"
-                   HorizontalAlignment="Center" 
-                   VerticalAlignment="Top"
+            <Grid Grid.Row="1">
+                <TextBox Name="ConsoleOutput" 
                    IsReadOnly="True"
                    AcceptsReturn="True"
                    VerticalScrollBarVisibility="Auto"
-                   Margin="5" 
                    Padding="5"
                    TextWrapping="Wrap" 
-                   Text="{Binding CentralText}"/>
+                   Background="WhiteSmoke" 
+                   TextChanged="ConsoleScrollToEndEvent"
+                   Text="{Binding ConsoleText, Mode=OneWay}"/>
+                <Thumb Name="ConsoleResizeThumb"
+                       VerticalAlignment="Top"
+                       Cursor="SizeNS"
+                       DragDelta="ConsoleResizeThumb_DragDelta"
+                       />
+            </Grid>
         </Grid>
-       
+        <!-- Settings Bar-->
+        <Grid Grid.Column="1"
+            Background="LightGray"
+              >
+            <StackPanel 
+                VerticalAlignment="Stretch">
 
-        <StackPanel Grid.Column="1"
-                    Background="LightGray"
-                    VerticalAlignment="Stretch">
+                <TextBlock Text="Problem" 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Center"
+                    Margin="10,10,10,5" />
 
-            <TextBlock Text="Population Size" 
-                       HorizontalAlignment="Left" 
-                       VerticalAlignment="Center"
-                       Margin="10,10,10,10" />
+                <ComboBox HorizontalAlignment="Left" 
+                    VerticalAlignment="Center"
+                    Margin="10,0,10,10" 
+                    Width="130"
+                    ItemsSource="{Binding ProblemFile}"
+                    SelectedItem="{Binding SelectedProblemFile}" />
 
-            <ComboBox HorizontalAlignment="Left" 
-                  VerticalAlignment="Center"
-                  Margin="10,0,10,20" 
-                  Width="130"
-                  ItemsSource="{Binding PopulationSize}"
-                  SelectedItem="{Binding SelectedPopulationSize}" />
-            
-            <Button Content="Load" 
-                HorizontalAlignment="Left" 
-                VerticalAlignment="Center"  
-                Margin="10,0,0,10"
-                Padding="5" 
-                Width="130" 
-                Command="{Binding LoadProblemCommand}"/>
-            
-            <Button Content="Run" 
-                HorizontalAlignment="Left" 
-                VerticalAlignment="Center" 
-                Margin="10,0,0,10"
-                Padding="5" 
-                Width="130"
-                Command="{Binding StartButtonCommand}" />
+                <Button Content="Load" 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Center"  
+                    Margin="10,0,0,20"
+                    Padding="5" 
+                    Width="130" 
+                    Command="{Binding LoadProblemCommand}"/>
 
+                <TextBlock Text="Population Size" 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Center"
+                    Margin="10,10,10,5" />
 
+                <ComboBox HorizontalAlignment="Left" 
+                    VerticalAlignment="Center"
+                    Margin="10,0,10,10" 
+                    Width="130"
+                    ItemsSource="{Binding PopulationSize}"
+                    SelectedItem="{Binding SelectedPopulationSize}" />
 
-        </StackPanel>
+                <TextBlock Text="Mutation probability" 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Center"
+                    Margin="10,0,10,5" />
+
+                <TextBox
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Center"
+                    Width="130"
+                    Margin="10,0,10,10" 
+                    Text="{Binding MutationProbability}"/>
+
+                <TextBlock Text="Mutation range" 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Center"
+                    Margin="10,0,10,5" />
+
+                <TextBox
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Center"
+                    Width="130"
+                    Margin="10,0,10,10" 
+                    Text="{Binding MutationRange}"/>
+
+                <TextBlock Text="Iterations" 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Center"
+                    Margin="10,0,10,5" />
+
+                <TextBox
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Center"
+                    Width="130"
+                    Margin="10,0,10,20" 
+                    Text="{Binding Iterations}"/>
+
+                <Button Content="Run" 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Center" 
+                    Margin="10,0,0,10"
+                    Padding="5" 
+                    Width="130"
+                    Command="{Binding StartButtonCommand}" />
+            </StackPanel>
+
+            <Thumb Name="SettingsBarResizeThumb"
+                   HorizontalAlignment="Left"
+                   Cursor="SizeWE"
+                   DragDelta="SettingsResizeThumb_DragDelta"
+                   />
+        </Grid>
     </Grid>
 </Window>
