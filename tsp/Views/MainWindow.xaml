@@ -11,7 +11,7 @@
 
         <!--Dividing the window into two columns-->
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*" Name="CanvasConsoleCol"/>
             <!-- Canvas plus console  -->
             <ColumnDefinition Width="150" Name="SettingsCol"/>
             <!-- Settings column-->
@@ -21,7 +21,7 @@
         <Grid Grid.Column="0">
 
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="*" Name="CanvasRow"/>
                 <RowDefinition Height="100" Name="ConsoleRow"/>
             </Grid.RowDefinitions>
 
@@ -43,7 +43,7 @@
                 <Thumb Name="ConsoleResizeThumb"
                        VerticalAlignment="Top"
                        Cursor="SizeNS"
-                       DragDelta="ConsoleResizeThumb_DragDelta"
+                       DragDelta="ConsoleResizeEvent"
                        />
             </Grid>
         </Grid>
@@ -84,43 +84,50 @@
                     Margin="10,0,10,10" 
                     Width="130"
                     ItemsSource="{Binding PopulationSize}"
-                    SelectedItem="{Binding SelectedPopulationSize}" />
+                    SelectedItem="{Binding SelectedPopulationSize}" 
+                    IsEnabled="{Binding IsRunSettingsEnabled}"/>
 
                 <TextBlock Text="Mutation probability" 
                     HorizontalAlignment="Left" 
                     VerticalAlignment="Center"
                     Margin="10,0,10,5" />
 
-                <TextBox
+                <TextBox Name="MutationProbabilityInput"
                     HorizontalAlignment="Left" 
                     VerticalAlignment="Center"
                     Width="130"
                     Margin="10,0,10,10" 
-                    Text="{Binding MutationProbability}"/>
+                    PreviewTextInput="FloatTextBoxContentChangedEvent"
+                    Text="{Binding MutationProbability}"
+                    IsEnabled="{Binding IsRunSettingsEnabled}"/>
 
                 <TextBlock Text="Mutation range" 
                     HorizontalAlignment="Left" 
                     VerticalAlignment="Center"
                     Margin="10,0,10,5" />
 
-                <TextBox
+                <TextBox Name="MutationRangeInput"
                     HorizontalAlignment="Left" 
                     VerticalAlignment="Center"
                     Width="130"
                     Margin="10,0,10,10" 
-                    Text="{Binding MutationRange}"/>
+                    PreviewTextInput="IntTextBoxContentChangedEvent"
+                    Text="{Binding MutationRange}"
+                    IsEnabled="{Binding IsRunSettingsEnabled}"/>
 
                 <TextBlock Text="Iterations" 
                     HorizontalAlignment="Left" 
                     VerticalAlignment="Center"
                     Margin="10,0,10,5" />
 
-                <TextBox
+                <TextBox Name="IterationsInput"
                     HorizontalAlignment="Left" 
                     VerticalAlignment="Center"
                     Width="130"
                     Margin="10,0,10,20" 
-                    Text="{Binding Iterations}"/>
+                    PreviewTextInput="IntTextBoxContentChangedEvent"
+                    Text="{Binding Iterations}"
+                    IsEnabled="{Binding IsRunSettingsEnabled}"/>
 
                 <Button Content="Run" 
                     HorizontalAlignment="Left" 
@@ -134,7 +141,7 @@
             <Thumb Name="SettingsBarResizeThumb"
                    HorizontalAlignment="Left"
                    Cursor="SizeWE"
-                   DragDelta="SettingsResizeThumb_DragDelta"
+                   DragDelta="SettingsColumnResizeEvent"
                    />
         </Grid>
     </Grid>

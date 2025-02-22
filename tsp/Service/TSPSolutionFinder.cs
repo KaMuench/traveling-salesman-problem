@@ -65,10 +65,10 @@ namespace TSP.Service
         {
             if (!DataLoaded()) throw new InvalidOperationException("Data must be loaded first!");
             if (mutationProb > 1 || mutationProb <= 0) throw new ArgumentException("Mutation probability must be between 0 and 1!");
-            if (mutationRange > Data.Cities.Length || mutationRange < 1) throw new ArgumentException("Mutation range must be between 1 and the number of cities!");
+            if (mutationRange > Data!.Cities.Length || mutationRange < 1) throw new ArgumentException("Mutation range must be between 1 and the number of cities!");
 
 
-            Population = PopulationFactory.NewPopulation(populationSize, mutationProb, mutationRange);
+            Population = PopulationFactory!.NewPopulation(populationSize, mutationProb, mutationRange);
 
             _currentSolution = Enumerable.Range(0, Data.Cities.Length).ToArray();
             _bestSolution = (int[])_currentSolution.Clone();
@@ -85,13 +85,13 @@ namespace TSP.Service
 
             for (int i=0; i<iterations;i++)
             {
-                Population.CrossOver();
+                Population!.CrossOver();
                 Population.Mutate();
 
                 bestSolIndex = Population.GetBestSolution();
                 _currentSolution = Population.GetSolutionCopy(bestSolIndex);
 
-                if ((Population.CalculateEffort(_currentSolution)) < Population.CalculateEffort(_bestSolution))
+                if ((Population.CalculateEffort(_currentSolution)) < Population.CalculateEffort(_bestSolution!))
                 {
                     _bestSolution = _currentSolution;
                     PutSolution((int[]) _bestSolution.Clone());
@@ -111,11 +111,22 @@ namespace TSP.Service
         {
             if (!DataLoaded()) throw new InvalidOperationException("Data must be loaded first!");
 
-            string message = $"Name:\t\t{Data.Name}\nDimension:\t{Data.Cities.Length}";
+            string message = $"Name:\t\t{Data!.Name}\nDimension:\t{Data.Cities.Length}";
 
             return message;
         }
+        public int    GetCityCount()
+        {
+            if (!DataLoaded()) throw new InvalidOperationException("Data must be loaded first!");
 
+            return Data!.Cities.Length;
+        }
+
+        public TSPData GetData()
+        {
+            if (!DataLoaded()) throw new InvalidOperationException("Data must be loaded first!");
+            return Data!;
+        }
 
         //
         // Solution Fifo Queue

@@ -39,8 +39,10 @@ namespace TSP.Service
 
             double sX = double.MaxValue, sY = double.MaxValue;
             double bX = double.MinValue, bY = double.MinValue;
+
+
             // Filter dimension ranges
-            foreach (City city in Cities)
+            foreach (City city in Cities!)
             {
                 if (city.X < sX) sX = city.X;
                 if (city.X > bX) bX = city.X;

@@ -17,12 +17,17 @@ namespace TSP.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        private string  _text;
-        private int     _selectedPopulationSize;
-        private string  _selectedProblemFile;
-        private float   _mutationProbability;
-        private int     _mutationRange;
-        private int     _iterations;
+        private string      _text;
+        private int         _selectedPopulationSize;
+        private string      _selectedProblemFile;
+        private float       _mutationProbability;
+        private int         _mutationRange;
+        private int         _iterations;
+        private bool        _isRunSettingsEnabled;
+        private TSPData?     _tspData;
+
+        private int          _mutationRangeMax = int.MaxValue;
+        private readonly int _iterationsMax = 1_000_000;
 
         private ObservableCollection<int>      _populationSize;
         private ObservableCollection<string>   _problemFile;
@@ -46,7 +51,7 @@ namespace TSP.ViewModels
             set 
             { 
                 _text += value;
-                NotifyUi();
+                NotifyPropertyChanged();
             }
         }
         public int      SelectedPopulationSize
@@ -57,17 +62,50 @@ namespace TSP.ViewModels
         public int      MutationRange
         {
             get { return _mutationRange; }
-            set { _mutationRange = value; }
+            set 
+            { 
+                if (value < 0 ) _mutationRange = 0;
+                else if (value > _mutationRangeMax) _mutationRange = _mutationRangeMax;
+                else _mutationRange = value;
+            }
         }
         public int      Iterations
         {
             get { return _iterations; }
-            set { _iterations = value; }
+            set 
+            {
+                if (value > _iterationsMax) _iterations = _iterationsMax;
+                else if (value < 0) _iterations = 0;
+                else _iterations = value;
+            }
         }
         public float    MutationProbability
         {
             get { return _mutationProbability; }
-            set { _mutationProbability = value; }
+            set 
+            {
+                if (value > 1f) _mutationProbability = 1f;
+                else if (value < 0f) _mutationProbability = 0f;
+                else _mutationProbability = value;
+            }
+        }
+        public bool     IsRunSettingsEnabled
+        {
+            get { return _isRunSettingsEnabled; }
+            set 
+            { 
+                _isRunSettingsEnabled = value; 
+                NotifyPropertyChanged();
+            }
+        }
+        public TSPData?  TspData
+        {
+            get { return _tspData; }
+            set 
+            { 
+                _tspData = value;
+                NotifyPropertyChanged();
+            }
         }
         public ObservableCollection<int> PopulationSize
         {
@@ -100,11 +138,14 @@ namespace TSP.ViewModels
             _selectedPopulationSize = _populationSize[3];
             _problemFile = new ObservableCollection<string> { "att48.tsp" };
             _selectedProblemFile = _problemFile[0];
+            _isRunSettingsEnabled = false;
 
             StartButtonCommand = new RelayCommand(StartRun);
             LoadProblemCommand = new RelayCommand(LoadProblem);
 
             _solutionFinder = new TSPSolutionFinder();
+
+
         }
 
         /// <summary>
@@ -135,6 +176,7 @@ namespace TSP.ViewModels
             LoadProblemCommand.SetCanExecute(false);
             if (_solutionFinder.DataLoaded())
             {
+
                 _solutionFinder.SetupSolution(SelectedPopulationSize, MutationRange, MutationProbability);
 
                 if (_solutionFinder.ReadyToRun())
@@ -177,6 +219,10 @@ namespace TSP.ViewModels
             {
                 string message = _solutionFinder.GetDataInfo();
                 WriteToConsole(message, true);
+
+                _mutationRangeMax = _solutionFinder.GetCityCount();
+                TspData = _solutionFinder.GetData();
+                IsRunSettingsEnabled = true;
             }
             LoadProblemCommand.SetCanExecute(true);
             StartButtonCommand.SetCanExecute(true);
@@ -186,7 +232,7 @@ namespace TSP.ViewModels
         /// This method is used to notify the UI that a property has changed.
         /// </summary>
         /// <param name="propertyName"></param>
-        public void NotifyUi([CallerMemberName] string? propertyName = null)
+        public void NotifyPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             Debug.WriteLine($"OnPropertyChanged: {propertyName}");
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
