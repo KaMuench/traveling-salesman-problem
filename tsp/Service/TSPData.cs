@@ -17,6 +17,9 @@ namespace TSP.Service
 
         private double[,] _distanceMatrix;
 
+        private static readonly string _REGEX_NUMBER = @"[+-]?(\d+\.\d+|\d+)";
+        private static readonly string _REGEX_COORD  = @"^\s*\d+\s+" + _REGEX_NUMBER + @"\s+" + _REGEX_NUMBER + @"\s*$";
+
         /// <summary>
         /// This constructor creates the TSPData object using the content of an .tsp file. It calles LoadData passing the 
         /// name of the tsp file to be loaded.It instanciates the Cities array and constructs a distance matrix containing 
@@ -41,6 +44,22 @@ namespace TSP.Service
             }
             XSmallest = sX; YSmallest = sY;
             XLargest = bX; YLargest = bY;
+
+            // If negative cities use of offset to make them positive
+            if (XSmallest < 0 || YSmallest < 0)
+            {
+                foreach (City city in Cities!)
+                {
+                    city.X += Math.Abs(XSmallest);
+                    city.Y += Math.Abs(YSmallest);
+                }
+
+                XSmallest += Math.Abs(XSmallest);
+                YSmallest += Math.Abs(YSmallest);
+                XLargest  += Math.Abs(XLargest);
+                YLargest  += Math.Abs(YLargest);
+            }
+
 
             _distanceMatrix = new double[Cities.Length,Cities.Length];
             for (int i = 0; i < _distanceMatrix.GetLength(0); i++)
@@ -81,8 +100,8 @@ namespace TSP.Service
             // Filter the dimension and name of the TSP 
             while(iterator.MoveNext())
             {
-                if (Regex.IsMatch(iterator.Current, @"^COMMENT : .+$")) Name = iterator.Current.Split(" : ")[1];
-                else if (Regex.IsMatch(iterator.Current, @"^DIMENSION : \d+$")) Cities = new City[int.Parse(iterator.Current.Split(" : ")[1])];  
+                if (Regex.IsMatch(iterator.Current, @"^COMMENT\s?:\s?.+$")) Name = iterator.Current.Split(":")[1].Trim();
+                else if (Regex.IsMatch(iterator.Current, @"^DIMENSION\s?:\s?\d+$")) Cities = new City[int.Parse(iterator.Current.Split(":")[1].Trim())];  
                 
             }
 
@@ -92,11 +111,12 @@ namespace TSP.Service
             // Create cities for each coordinate pair in file
             while (iterator.MoveNext())
             {
-                if(Regex.IsMatch(iterator.Current, @"^\d+ \d+ \d+$"))
+                if (Regex.IsMatch(iterator.Current, _REGEX_COORD)) 
                 {
-                    int index = int.Parse(iterator.Current.Split(' ')[0]);
-                    double x = double.Parse(iterator.Current.Split(' ')[1]);
-                    double y = double.Parse(iterator.Current.Split(' ')[2]);
+                    string[] parts = iterator.Current.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    int index = int.Parse(parts[0]);
+                    double x = double.Parse(parts[1]);
+                    double y = double.Parse(parts[2]);
 
                     if((index-1) == Cities.Length) throw new InvalidDataException($"{tspFileName}: DIMENSION was {Cities.Length} but is more!");
                     else Cities[index - 1] = new City(x,y);

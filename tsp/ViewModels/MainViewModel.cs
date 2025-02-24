@@ -144,7 +144,7 @@ namespace TSP.ViewModels
             _iterations = 10000;
             _populationSize = new ObservableCollection<int> { 4, 8, 16, 32, 64};
             _selectedPopulationSize = _populationSize[3];
-            _problemFile = new ObservableCollection<string> { "att48.tsp" };
+            _problemFile = new ObservableCollection<string> { "att48.tsp", "ali535.tsp", "berlin52.tsp", "gr96.tsp", "pr107.tsp" };
             _selectedProblemFile = _problemFile[0];
             _isRunSettingsEnabled = false;
 

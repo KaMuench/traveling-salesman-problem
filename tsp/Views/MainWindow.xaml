@@ -39,7 +39,7 @@
                         VerticalAlignment="Top"
                         HorizontalAlignment="Left"
                         Orientation="Vertical"
-                        Background="Transparent"
+                        Background="#99FFFFFF"
                         Margin="10">
 
                 <TextBlock Name="DataNameInfo"
@@ -47,13 +47,15 @@
                            Background="Transparent"
                            FontSize="14"
                            Foreground="Black"
-                           HorizontalAlignment="Left"/>
+                           HorizontalAlignment="Left"
+                           Margin="5,0,5,0"/>
                 <TextBlock Name="DistanceInfo"
                            Text=""
                            Background="Transparent"
                            FontSize="14"
                            Foreground="Black"
-                           HorizontalAlignment="Left"/>
+                           HorizontalAlignment="Left"
+                           Margin="5,0,5,0"/>
 
             </StackPanel>
 

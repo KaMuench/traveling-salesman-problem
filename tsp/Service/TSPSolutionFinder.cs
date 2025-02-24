@@ -21,8 +21,7 @@ namespace TSP.Service
         /// </summary>
         private TSPData? Data { get; set; }
         private Queue<int[]> _solutionsQueue = new Queue<int[]>();
-        private int[]? _currentSolution;
-        private int[]? _bestSolution;
+        private double _bestSolution;
 
 
         //
@@ -68,8 +67,10 @@ namespace TSP.Service
 
             Population = PopulationFactory!.NewPopulation(populationSize, mutationProb, mutationRange);
 
-            _currentSolution = Enumerable.Range(0, Data.Cities.Length).ToArray();
-            _bestSolution = (int[])_currentSolution.Clone();
+            int index = Population.GetBestSolution();
+
+            _bestSolution = Population.CalculateEffort(index);
+            PutSolution(Population.GetSolutionCopy(index));
         }
         /// <summary>
         /// This method starts the caluclation. 
@@ -79,20 +80,20 @@ namespace TSP.Service
         {
             if (!ReadyToRun()) throw new InvalidOperationException("Data must be loaded and the solution must be set up first!");
 
-            int bestSolIndex = -1;
+            int curBestSolIndex = -1;
 
             for (int i=0; i<iterations;i++)
             {
                 Population!.CrossOver();
                 Population.Mutate();
 
-                bestSolIndex = Population.GetBestSolution();
-                _currentSolution = Population.GetSolutionCopy(bestSolIndex);
+                curBestSolIndex = Population.GetBestSolution();
+                double currentSolution = Population.CalculateEffort(curBestSolIndex);
 
-                if ((CalculateEffort(_currentSolution)) < CalculateEffort(_bestSolution!))
+                if (currentSolution < _bestSolution)
                 {
-                    _bestSolution = _currentSolution;
-                    PutSolution((int[]) _bestSolution.Clone());
+                    _bestSolution = currentSolution;
+                    PutSolution(Population.GetSolutionCopy(curBestSolIndex));
                 }
 
                 //Debug.Write($"\nIteration: {i}\n");

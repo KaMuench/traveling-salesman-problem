@@ -160,6 +160,10 @@ namespace TSP.Service
             _population = newPopulation;
         }
 
+        public double CalculateEffort(int index)
+        {
+            return CalculateEffort(_population[index]);
+        }
         /// <summary>
         /// This method caluculates the total effort needed to travel from city to city for one solution in the population.
         /// 
