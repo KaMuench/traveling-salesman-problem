@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace TSP.Service
 {
@@ -16,14 +9,11 @@ namespace TSP.Service
     public class TSPData
     {
         public City[] Cities { get; private set; }
-        public string? Name { get; private set; }
+        public string Name { get; private set; } = "Not loaded";
         public double XSmallest { get; private set; }
         public double XLargest { get; private set; }
         public double YSmallest { get; private set; }
         public double YLargest { get; private set; }
-
-        public double XDimension { get; private set; }
-        public double YDimension { get; private set; }
 
         private double[,] _distanceMatrix;
 
@@ -51,9 +41,6 @@ namespace TSP.Service
             }
             XSmallest = sX; YSmallest = sY;
             XLargest = bX; YLargest = bY;
-
-            XDimension = XLargest - XSmallest;
-            YDimension = YLargest - YSmallest;
 
             _distanceMatrix = new double[Cities.Length,Cities.Length];
             for (int i = 0; i < _distanceMatrix.GetLength(0); i++)

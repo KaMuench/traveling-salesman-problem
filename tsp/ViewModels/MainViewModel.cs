@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Resources;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Input;
-using Accessibility;
 using TSP.Service;
 
 namespace TSP.ViewModels
@@ -24,7 +15,8 @@ namespace TSP.ViewModels
         private int         _mutationRange;
         private int         _iterations;
         private bool        _isRunSettingsEnabled;
-        private TSPData?     _tspData;
+        private string      _dataName;
+        private TSPData?    _tspData;
 
         private int          _mutationRangeMax = int.MaxValue;
         private readonly int _iterationsMax = 1_000_000;
@@ -37,9 +29,19 @@ namespace TSP.ViewModels
         /// If a property was changed by code, this event is triggered to notify the UI.
         /// </summary>
         public event PropertyChangedEventHandler? PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChangedAsync;
         public RelayCommand StartButtonCommand { get; set; }
         public RelayCommand LoadProblemCommand { get; set; }
 
+        public string   DataName
+        {
+            get { return _dataName; }
+            set 
+            { 
+                _dataName = value; 
+                NotifyPropertyChanged();
+            }
+        }
         public string   SelectedProblemFile
         {
             get { return _selectedProblemFile; }
@@ -98,7 +100,12 @@ namespace TSP.ViewModels
                 NotifyPropertyChanged();
             }
         }
-        public TSPData?  TspData
+        public TSPSolutionFinder TSPSolutionFinder
+        {
+            private set { _solutionFinder = value; }
+            get { return _solutionFinder; }
+        }
+        public TSPData?          TspData
         {
             get { return _tspData; }
             set 
@@ -131,6 +138,7 @@ namespace TSP.ViewModels
         public MainViewModel()
         {
             _text = "";
+            _dataName = "";
             _mutationProbability = 0.1f;
             _mutationRange = 2;
             _iterations = 10000;
@@ -153,7 +161,7 @@ namespace TSP.ViewModels
         /// </summary>
         /// <param name="message"></param>
         /// <param name="debug"></param>
-        private void WriteToConsole(string message, bool debug = false)
+        public void WriteToConsole(string message, bool debug = false)
         {
             // Since multiple threads can try to put something into the console
             lock (_text)
@@ -186,13 +194,12 @@ namespace TSP.ViewModels
                     Task runner = Task.Run(() => _solutionFinder.Run(Iterations));
                     await Task.Run(() =>
                     {
-                        int[]? solution = null;
-                        while (!runner.IsCompleted)
+                        while ((!runner.IsCompleted || _solutionFinder.HasNewSolution()))
                         {
-                            if ((solution = _solutionFinder.RetrieveSolution()) != null)
+                            if (_solutionFinder.HasNewSolution())
                             {
-                                WriteToConsole($"New score: {_solutionFinder.EffortBestSolution}");
-
+                                PropertyChangedAsync?.Invoke(this, new PropertyChangedEventArgs("NewSolution"));
+                                Thread.Sleep(100);
                             }
                         }
                     });
@@ -215,13 +222,14 @@ namespace TSP.ViewModels
             WriteToConsole($"Loading data file {SelectedProblemFile} ...", true);
             await Task.Run(() => _solutionFinder.LoadData($"./Resources/{SelectedProblemFile}"));
 
-            if(_solutionFinder.DataLoaded())
+            if (_solutionFinder.DataLoaded())
             {
                 string message = _solutionFinder.GetDataInfo();
                 WriteToConsole(message, true);
 
                 _mutationRangeMax = _solutionFinder.GetCityCount();
                 TspData = _solutionFinder.GetData();
+                DataName = TspData.Name;
                 IsRunSettingsEnabled = true;
             }
             LoadProblemCommand.SetCanExecute(true);

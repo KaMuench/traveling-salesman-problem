@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -25,7 +26,10 @@ namespace TSP.Views
     {
         private MainViewModel _viewModel;
 
+        private readonly double _RADIUS_CITY_SMALL = 2.5;
+        private readonly double _RADIUS_CITY_LARGE = 4.0;
 
+        private int[]? _solutionToDraw;
         public MainWindow()
         {
             InitializeComponent();
@@ -33,6 +37,7 @@ namespace TSP.Views
             DataContext = _viewModel;
 
             _viewModel.PropertyChanged += DataPropertyChangedEvent;
+            _viewModel.PropertyChangedAsync += SolutionChangedEvent;
 
             SizeChanged += MainWindowSizeChangedEvent;
         }
@@ -60,7 +65,11 @@ namespace TSP.Views
             if (newConsoleHeight > 50 && newCanvasHeight > 100) 
             {
                 consoleRow.Height = new GridLength(newConsoleHeight);
-                DrawCoordinatesInCanvas();
+
+                if (_solutionToDraw == null)
+                    DrawCoordinatesInCanvas();
+                else
+                    DrawLinesAndCoordinatesInCanvas();
             }
         }
 
@@ -75,7 +84,11 @@ namespace TSP.Views
             if (newSetColWidth > 150 && newCanColWidth > 250)  
             {
                 settingsCol.Width = new GridLength(newSetColWidth);
-                DrawCoordinatesInCanvas();
+
+                if (_solutionToDraw == null)
+                    DrawCoordinatesInCanvas();
+                else
+                    DrawLinesAndCoordinatesInCanvas();
             }
         }
 
@@ -91,18 +104,41 @@ namespace TSP.Views
 
             e.Handled = !float.TryParse(((TextBox)sender).Text + e.Text, out _);
         }
+        private void SolutionChangedEvent(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "NewSolution")
+            {
+                TSPSolutionFinder solFinder = _viewModel.TSPSolutionFinder;
+                if (!solFinder.HasNewSolution()) throw new InvalidDataException("No new solution available!");
 
+                Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        _solutionToDraw = _viewModel.TSPSolutionFinder.RetrieveSolution();
+                        double distance = _viewModel.TSPSolutionFinder.CalculateEffort(_solutionToDraw!);
+                        string distanceText = string.Format("Distance: {0:F2}", distance);
+                        DistanceInfo.Text = distanceText;
+                        _viewModel.WriteToConsole(distanceText);
+
+                        DrawLinesAndCoordinatesInCanvas();
+                    }
+                );
+            }
+        }
         private void DataPropertyChangedEvent(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(MainViewModel.TspData))
             {
                 DrawCoordinatesInCanvas();
+                _solutionToDraw = null;     // new data, so old solution is not valid anymore
             }
         }
 
         private void MainWindowSizeChangedEvent(object sender, SizeChangedEventArgs e)
         {
-            DrawCoordinatesInCanvas();
+            if (_solutionToDraw == null) 
+                DrawCoordinatesInCanvas();
+            else 
+                DrawLinesAndCoordinatesInCanvas();
         }
 
         private void DrawCoordinatesInCanvas()
@@ -110,38 +146,114 @@ namespace TSP.Views
             Canvas  canvas = TSPSolutionGraphCanvas;
             TSPData? coordinates = _viewModel.TspData;
 
-            if (coordinates == null) return;
+            if (coordinates == null || canvas.ActualWidth == 0 || canvas.ActualHeight == 0) return;
 
-            double  max_CorX = coordinates.XLargest;
-            double  max_CorY = coordinates.YLargest;
-            double  offsetX = 10f;
-            double  offsetY = 10f;
+            double offsetX, dimX, scaleX,
+                   offsetY, dimY, scaleY;
 
-            if (canvas.ActualWidth == 0 || canvas.ActualHeight == 0) return;
-
-            double dimX = canvas.ActualWidth - offsetX*2;
-            double dimY = canvas.ActualHeight - offsetY*2;
-            double scaleX = dimX  / max_CorX;
-            double scaleY = dimY  / max_CorY;
+            SetDimensionVariables(coordinates, canvas,
+                out offsetX, out offsetY, out dimX, out dimY, out scaleX, out scaleY, 
+                coordinates.XLargest, coordinates.YLargest);
 
             canvas.Children.Clear();
 
-            foreach(City city in coordinates.Cities)
+            foreach (City city in coordinates.Cities)
             {
                 double mappedX = city.X * scaleX;
                 double mappedY = city.Y * scaleY;
 
-                Ellipse ellipse = new Ellipse
-                {
-                    Width = 5,
-                    Height = 5,
-                    Fill = Brushes.OrangeRed
-                };
-                Canvas.SetLeft(ellipse, offsetX + mappedX);
-                Canvas.SetTop(ellipse,  offsetY + (dimY - mappedY));
+                Ellipse ellipse = GetEllipse(offsetX + mappedX, offsetY + (dimY - mappedY), _RADIUS_CITY_SMALL);
+                ellipse.Fill = Brushes.OrangeRed;
                 canvas.Children.Add(ellipse);
             }
 
+        }
+    
+        private void DrawLinesAndCoordinatesInCanvas()
+        {
+            Canvas canvas = TSPSolutionGraphCanvas;
+            TSPData? coordinates = _viewModel.TspData;
+            int[]? solution = _solutionToDraw;
+
+            if (coordinates == null || solution == null || canvas.ActualWidth == 0 || canvas.ActualHeight == 0) return;
+
+            double offsetX, dimX, scaleX,
+                   offsetY, dimY, scaleY;
+
+            SetDimensionVariables(coordinates, canvas,
+                out offsetX, out offsetY, out dimX, out dimY, out scaleX, out scaleY,
+                coordinates.XLargest, coordinates.YLargest);
+
+            canvas.Children.Clear();
+
+            for (int i = 0, length = coordinates.Cities.Length; i < length; i++)
+            {
+                int fromIndex = solution[i];
+                int toIndex = solution[i + 1 == length ? 0 : i + 1];
+
+                City fromCity = coordinates.Cities[fromIndex];
+                City toCity = coordinates.Cities[toIndex];
+
+
+                double mappedX = fromCity.X * scaleX;
+                double mappedY = fromCity.Y * scaleY;
+
+                Ellipse ellipse = GetEllipse(offsetX + mappedX, offsetY + (dimY - mappedY), _RADIUS_CITY_LARGE);
+                ellipse.Fill = Brushes.Blue;
+                canvas.Children.Add(ellipse);
+
+                
+                double mappedX2 = toCity.X * scaleX;
+                double mappedY2 = toCity.Y * scaleY;
+                Line line = new Line
+                {
+                    X1 = offsetX + mappedX,
+                    Y1 = offsetY + (dimY - mappedY),
+                    X2 = offsetX + mappedX2,
+                    Y2 = offsetY + (dimY - mappedY2),
+                    Stroke = Brushes.Blue,
+                    StrokeThickness = 1
+                };
+                canvas.Children.Add(line);
+
+
+                Ellipse ellipse2 = GetEllipse(offsetX + mappedX, offsetY + (dimY - mappedY), _RADIUS_CITY_SMALL);
+                ellipse2.Fill = Brushes.OrangeRed;
+                canvas.Children.Add(ellipse2);
+            }
+        }
+
+        private static void SetDimensionVariables(TSPData tspData, Canvas canvas,
+            out double paddingViewPortX,
+            out double paddingViewPortY,
+            out double dimensionViewPortX,
+            out double dimensionViewPortY,
+            out double unitSizeX,
+            out double unitSizeY,
+            double dimensionDataX,
+            double dimensionDataY)
+        {
+            paddingViewPortX = paddingViewPortY = 10f;
+            dimensionDataX = tspData.XLargest;
+            dimensionDataY = tspData.YLargest;
+            dimensionViewPortX = canvas.ActualWidth - paddingViewPortX * 2;
+            dimensionViewPortY = canvas.ActualHeight - paddingViewPortY * 2;
+            unitSizeX = dimensionViewPortX / dimensionDataX;
+            unitSizeY = dimensionViewPortY / dimensionDataY;
+        }
+    
+        private static Ellipse GetEllipse(double x, double y, double radius)
+        {
+            Ellipse retEl =  new Ellipse
+            {
+                Width = radius * 2,
+                Height = radius * 2,
+            };
+
+            Canvas.SetLeft(retEl, x - radius);
+            Canvas.SetTop(retEl, y  - radius);
+
+            return retEl;
         }
     }
 }

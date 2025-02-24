@@ -9,7 +9,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\ali535.tsp" />
+    <None Remove="Resources\tsp_logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Model\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\ali535.tsp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\tsp_logo.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>
@@ -28,9 +42,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Resources\ali535.tsp">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Resources\att48.tsp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

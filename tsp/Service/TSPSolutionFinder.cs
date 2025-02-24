@@ -16,8 +16,6 @@ namespace TSP.Service
         public TSPPopulationFactory? PopulationFactory { get; private set; }
         public TSPPopulation?        Population { get; private set; }
 
-        public double? EffortBestSolution { get; private set; }
-
         /// <summary>
         /// The list containing the City objects for the tsp. The coordinates of these objects are used to run the calculations.
         /// </summary>
@@ -91,7 +89,7 @@ namespace TSP.Service
                 bestSolIndex = Population.GetBestSolution();
                 _currentSolution = Population.GetSolutionCopy(bestSolIndex);
 
-                if ((Population.CalculateEffort(_currentSolution)) < Population.CalculateEffort(_bestSolution!))
+                if ((CalculateEffort(_currentSolution)) < CalculateEffort(_bestSolution!))
                 {
                     _bestSolution = _currentSolution;
                     PutSolution((int[]) _bestSolution.Clone());
@@ -101,6 +99,13 @@ namespace TSP.Service
                 //Population.DebugPopulation();
             }
         }
+
+        public double CalculateEffort(int[] solution)
+        {
+            if (!ReadyToRun()) throw new InvalidOperationException("Data must be loaded and the solution must be set up first!");
+            return Population!.CalculateEffort(solution);
+        }
+
 
         /// <summary>
         /// This method returns a string with the information about the data loaded.
@@ -121,7 +126,6 @@ namespace TSP.Service
 
             return Data!.Cities.Length;
         }
-
         public TSPData GetData()
         {
             if (!DataLoaded()) throw new InvalidOperationException("Data must be loaded first!");
@@ -141,7 +145,6 @@ namespace TSP.Service
             lock (_solutionsQueue)
             {
                 _solutionsQueue.Enqueue(solution);
-                EffortBestSolution = Population?.CalculateEffort(solution);
             }
         }
         /// <summary>
@@ -152,8 +155,19 @@ namespace TSP.Service
         {
             lock (_solutionsQueue)
             {
-                if (_solutionsQueue.Count != 0) return _solutionsQueue.Dequeue();
+                if (HasNewSolution())
+                {
+                    return _solutionsQueue.Dequeue();
+                }
                 else return null;
+            }
+        }
+
+        public bool  HasNewSolution()
+        {
+            lock (_solutionsQueue)
+            {
+                return _solutionsQueue.Count != 0;
             }
         }
     }

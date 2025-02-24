@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.DirectoryServices.ActiveDirectory;
-using System.IO.Packaging;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Documents;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using System.Diagnostics;
+
 
 namespace TSP.Service
 {
@@ -61,48 +52,6 @@ namespace TSP.Service
             //DebugPopulation();
         }
 
-
-        /// <summary>
-        /// This method caluculates the total effort needed to travel from city to city for one solution in the population.
-        /// 
-        /// </summary>
-        /// <param name="solution">The index of the solution in the population array, containing the order.</param>
-        /// <returns>The total effort for one solution at index "index"</returns>
-        public double CalculateEffort(int index)
-        {
-            return CalculateEffort(_population[index]);
-        }
-        
-        public double CalculateEffort(int[] solution)
-        {
-            double sum = 0;
-            double value = 0;
-
-            int indexFirst = 0;
-            int indexSecond = 0;
-
-            for (int i = 0; i < _SIZE_SOLUTION; i++)
-            {
-                indexFirst = solution[i];
-                if (i != _SIZE_SOLUTION - 1)
-                {
-                    indexSecond = solution[i + 1];
-
-                    value = _factory.Data.CalculateDistance(indexFirst, indexSecond);
-                    sum += value;
-                }
-                else
-                {
-                    indexSecond = solution[0];
-
-                    value = _factory.Data.CalculateDistance(indexFirst, indexSecond);
-                    sum += value;
-                }
-            }
-
-            Console.WriteLine($"Effort sum: {sum}");
-            return sum;
-        }
 
         /// <summary>
         /// This method executes a mutation on the solution arrays. The mutation means randomly swapping values inside a solution array.
@@ -211,6 +160,43 @@ namespace TSP.Service
             _population = newPopulation;
         }
 
+        /// <summary>
+        /// This method caluculates the total effort needed to travel from city to city for one solution in the population.
+        /// 
+        /// </summary>
+        /// <param name="solution">The solution used to calculate the effort</param>
+        /// <returns>The total effort for one solution at index "index"</returns>
+        public double CalculateEffort(int[] solution)
+        {
+            double sum = 0;
+            double value = 0;
+            int length = _SIZE_SOLUTION;
+            int indexFirst = 0;
+            int indexSecond = 0;
+
+            for (int i = 0; i < length; i++)
+            {
+                indexFirst = solution[i];
+                if (i != length - 1)
+                {
+                    indexSecond = solution[i + 1];
+
+                    value = _factory.Data.CalculateDistance(indexFirst, indexSecond);
+                    sum += value;
+                }
+                else
+                {
+                    indexSecond = solution[0];
+
+                    value = _factory.Data.CalculateDistance(indexFirst, indexSecond);
+                    sum += value;
+                }
+            }
+
+            Console.WriteLine($"Effort sum: {sum}");
+            return sum;
+        }
+
         public int GetBestSolution() 
         {
             double bestScore = double.MaxValue;
@@ -219,9 +205,9 @@ namespace TSP.Service
 
             for(int i=0;i<_population.Length;i++)
             {
-                if((CalculateEffort(i)) < bestScore)
+                if((CalculateEffort(_population[i])) < bestScore)
                 {
-                    bestScore = CalculateEffort(i);
+                    bestScore = CalculateEffort(_population[i]);
                     indexBestScrore = i;
                 }
             }
